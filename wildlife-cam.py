@@ -4,7 +4,7 @@ import time
 import sys
 
 # Sys Args
-PHOTO_PATH = sys.argv[0]
+PHOTO_PATH = sys.argv[1]
 
 # GPIO pin for the PIR sensor
 PIR_GPIO_PIN = 4
