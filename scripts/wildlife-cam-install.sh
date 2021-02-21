@@ -39,7 +39,7 @@ sudo apt-get --yes install python3-smbus
 # Install dependencies
 sudo apt-get --yes install git
 sudo apt install --yes python3-gpiozero
-sudo apt-get install --yes python-picamera python3-picamera
+sudo apt-get install --yes python3-picamera
 sudo apt-get install --yes python3-requests
 
 # Check if Wildlife Cam folder already exists
