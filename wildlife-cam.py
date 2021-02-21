@@ -1,6 +1,6 @@
-from gpiozero import MotionSensor
 from picamera import PiCamera
 from pprint import pprint
+import RPi.GPIO as GPIO
 import time
 import sys
 import requests
@@ -11,13 +11,14 @@ CONFIG_FILE_PATH = sys.argv[1]
 config = configparser.ConfigParser()
 config.read(CONFIG_FILE_PATH)
 
-# GPIO pin for the PIR sensor
-PIR_GPIO_PIN = 4
 WAIT_TIME = 2
 
-pir = MotionSensor(PIR_GPIO_PIN)
-camera = PiCamera()
+# GPIO pin for the PIR sensor
+PIR_GPIO_PIN = 4
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 
+camera = PiCamera()
 
 def generate_file_name():
     photo_dir_path = config['General']['PhotoDirPath']
@@ -55,13 +56,13 @@ def handle_motion_detected():
 
 
 print("wildlife-cam: Starting")
-pir.wait_for_no_motion()
+time.sleep(2)
 try:
+    print("wildlife-cam: Ready and waiting for motion")
+    GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
     while True:
-        print("wildlife-cam: Ready and waiting for motion")
-        if pir.motion_detected:
-            handle_motion_detected()
         time.sleep(WAIT_TIME)
 except KeyboardInterrupt:
     print("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
+    GPIO.cleanup()
