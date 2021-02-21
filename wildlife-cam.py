@@ -20,6 +20,7 @@ GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 
 camera = PiCamera()
 
+
 def generate_file_name():
     photo_dir_path = config['General']['PhotoDirPath']
     return photo_dir_path + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
@@ -45,7 +46,7 @@ def send_telegram_message(file_name):
         pprint(response.json())
 
 
-def handle_motion_detected():
+def handle_motion_detected(pir_sensor):
     print("wildlife-cam: Motion detected.")
 
     file_name = generate_file_name()
