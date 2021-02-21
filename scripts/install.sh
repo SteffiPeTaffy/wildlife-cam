@@ -31,6 +31,7 @@ sudo apt-get install python3-rpi.gpio
 sudo apt-get install python3-smbus
 
 # Install dependencies
+sudo apt-get --yes --force-yes install git
 
 # Get github code
 cd /home/pi/ || exit
