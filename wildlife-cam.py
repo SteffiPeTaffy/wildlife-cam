@@ -53,7 +53,8 @@ def upload_to_sftp(file_name):
     sftp_password = config['SFTP']['Password']
     sftp_dir = config['SFTP']['Directory']
 
-    cnopts = pysftp.CnOpts(knownhosts='known_hosts')
+    cnopts = pysftp.CnOpts()
+    cnopts.hostkeys = None
     srv = pysftp.Connection(host=sftp_host, port=sftp_port, username=sftp_username,
                             password=sftp_password, cnopts=cnopts)
 
