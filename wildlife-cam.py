@@ -51,12 +51,12 @@ def upload_to_sftp(file_name):
     sftp_port = int(config['SFTP']['Port'])
     sftp_username = config['SFTP']['Username']
     sftp_password = config['SFTP']['Password']
-    sft_dir = config['SFTP']['Directory']
+    sftp_dir = config['SFTP']['Directory']
 
     srv = pysftp.Connection(host=sftp_host, port=sftp_port, username=sftp_username,
                             password=sftp_password)
 
-    with srv.cd(sft_dir):
+    with srv.cd(sftp_dir):
         srv.put(file_name)
 
     srv.close()
