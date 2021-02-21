@@ -35,6 +35,7 @@ sudo apt-get --yes install git
 
 # Get github code
 cd /home/pi/ || exit
+sudo rm -r wildlife-cam 2> /dev/null
 git clone https://github.com/SteffiPeTaffy/wildlife-cam.git
 
 # run wildlife cam
@@ -46,4 +47,6 @@ echo "DONE. Let's watch some squirrels :)"
 echo "Find more information on the github account:"
 echo "https://github.com/SteffiPeTaffy/wildlife-cam"
 echo ""
+
+rm -- "$0"
 
