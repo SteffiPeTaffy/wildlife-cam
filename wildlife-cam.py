@@ -1,4 +1,5 @@
 from picamera import PiCamera
+from pathlib import Path
 import RPi.GPIO as GPIO
 import time
 import sys
@@ -22,23 +23,22 @@ camera = PiCamera()
 
 
 def generate_file_name():
-    photo_dir_path = config['General']['PhotoDirPath']
     return photo_dir_path + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
 
 
-def snap_photo(file_name):
+def snap_photo(file_path):
     camera.resolution = (1024, 768)
-    camera.capture(file_name)
+    camera.capture(file_path)
 
 
-def send_telegram_message(file_name):
+def send_telegram_message(file_path):
     print("wildlife-cam: Sending Message to Telegram.")
     telegram_api_key = config['Telegram']['ApiKey']
     telegram_chat_id = config['Telegram']['ChatId']
 
     url = "https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key)
     payload = {'chat_id': telegram_chat_id}
-    files = [('photo', ('wildlife.jpg', open(file_name, 'rb'), 'image/jpeg'))]
+    files = [('photo', ('wildlife.jpg', open(file_path, 'rb'), 'image/jpeg'))]
     response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
 
     if response.status_code != 200:
@@ -66,15 +66,20 @@ def upload_to_sftp(file_name):
 
 def handle_motion_detected(pir_sensor):
     print("wildlife-cam: Motion detected.")
+    photo_dir_path = config['General']['PhotoDirPath']
 
-    file_name = generate_file_name()
-    snap_photo(file_name)
+    folder_path = photo_dir_path + time.strftime("%Y-%m-%d", time.localtime())
+    Path(folder_path).mkdir(parents=True, exist_ok=True)
+
+    file_name = time.strftime("%H-%M-%S", time.localtime()) + ".jpeg"
+    file_path = folder_path + "/" + file_name
+    snap_photo(file_path)
 
     if config.has_section('Telegram'):
-        send_telegram_message(file_name)
+        send_telegram_message(file_path)
 
     if config.has_section('SFTP'):
-        upload_to_sftp(file_name)
+        upload_to_sftp(file_path)
 
 
 print("wildlife-cam: Starting")
