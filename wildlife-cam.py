@@ -37,7 +37,7 @@ def send_telegram_message(file_name):
     url = "https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key)
     payload = {'chat_id': telegram_chat_id}
     files = [('photo', ('wildlife.jpg', open(file_name, 'rb'), 'image/jpeg'))]
-    response = requests.request("POST", url, data=payload, files=files)
+    response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
 
     if response.status_code != 200:
         print("wildlife-cam: Sending Message to Telegram failed.")
