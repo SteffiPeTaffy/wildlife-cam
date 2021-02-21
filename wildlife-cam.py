@@ -2,9 +2,13 @@ from gpiozero import MotionSensor
 from picamera import PiCamera
 import time
 import sys
+import requests
+import configparser
 
 # Sys Args
-PHOTO_PATH = sys.argv[1]
+CONFIG_FILE_PATH = sys.argv[1]
+config = configparser.ConfigParser()
+config.read(CONFIG_FILE_PATH)
 
 # GPIO pin for the PIR sensor
 PIR_GPIO_PIN = 4
@@ -15,12 +19,33 @@ camera = PiCamera()
 
 
 def generate_file_name():
-    return PHOTO_PATH + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
+    photo_dir_path = config['General']['PhotoDirPath']
+    return photo_dir_path + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
 
 
-def snap_photo():
+def snap_photo(file_name):
     camera.resolution = (1024, 768)
-    camera.capture(generate_file_name())
+    camera.capture(file_name)
+
+
+def send_telegram_message(file_name):
+    telegram_api_key = config['Telegram']['ApiKey']
+    telegram_chat_id = config['Telegram']['ChatId']
+
+    files = {'photo': open(file_name, 'r'), 'chat_id': telegram_chat_id}
+
+    response = requests.post("https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key),
+                             files=files)
+
+
+def handle_motion_detected():
+    print("wildlife-cam: Motion detected.")
+
+    file_name = generate_file_name()
+    snap_photo(file_name)
+
+    if config.has_section('Telegram'):
+        send_telegram_message(file_name)
 
 
 print("wildlife-cam: Starting")
@@ -29,8 +54,7 @@ try:
     while True:
         print("wildlife-cam: Ready and waiting for motion")
         pir.wait_for_motion()
-        print("wildlife-cam: Motion detected.")
-        snap_photo()
+        handle_motion_detected()
         time.sleep(WAIT_TIME)
 except KeyboardInterrupt:
     print("wildlife-cam: Stopping Wildlife Cam")
