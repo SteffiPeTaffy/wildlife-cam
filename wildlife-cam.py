@@ -59,8 +59,8 @@ pir.wait_for_no_motion()
 try:
     while True:
         print("wildlife-cam: Ready and waiting for motion")
-        pir.wait_for_motion()
-        handle_motion_detected()
+        if pir.motion_detected:
+            handle_motion_detected()
         time.sleep(WAIT_TIME)
 except KeyboardInterrupt:
     print("wildlife-cam: Stopping Wildlife Cam")
