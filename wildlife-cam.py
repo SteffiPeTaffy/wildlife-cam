@@ -1,5 +1,4 @@
 from picamera import PiCamera
-from pprint import pprint
 import RPi.GPIO as GPIO
 import time
 import sys
@@ -43,7 +42,6 @@ def send_telegram_message(file_name):
 
     if response.status_code != 200:
         print("wildlife-cam: Sending Message to Telegram failed.")
-        pprint(response.json())
 
 
 def handle_motion_detected(pir_sensor):
