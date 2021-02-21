@@ -26,19 +26,16 @@ sudo apt-get remove python
 sudo apt autoremove
 
 # Install python 3
-sudo apt-get install python3
-sudo apt-get install python3-rpi.gpio
-sudo apt-get install python3-smbus
+sudo apt-get --yes --allow install python3
+sudo apt-get --yes --allow install python3-rpi.gpio
+sudo apt-get --yes --allow install python3-smbus
 
 # Install dependencies
-sudo apt-get --yes --force-yes install git
+sudo apt-get --yes --allow install git
 
 # Get github code
 cd /home/pi/ || exit
 git clone https://github.com/SteffiPeTaffy/wildlife-cam.git
-
-# check if correct branch was cloned
-git status
 
 # run wildlife cam
 cd /home/pi/wildlife-cam || exit
