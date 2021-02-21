@@ -26,12 +26,12 @@ sudo apt-get remove python
 sudo apt autoremove
 
 # Install python 3
-sudo apt-get --yes --allow install python3
-sudo apt-get --yes --allow install python3-rpi.gpio
-sudo apt-get --yes --allow install python3-smbus
+sudo apt-get --yes install python3
+sudo apt-get --yes install python3-rpi.gpio
+sudo apt-get --yes install python3-smbus
 
 # Install dependencies
-sudo apt-get --yes --allow install git
+sudo apt-get --yes install git
 
 # Get github code
 cd /home/pi/ || exit
