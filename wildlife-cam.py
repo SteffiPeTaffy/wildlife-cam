@@ -9,7 +9,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 
 # time to wait after taking a photo in seconds
-WAIT_TIME = 5
+WAIT_TIME = 2
 
 print(GPIO.RPI_INFO)
 
