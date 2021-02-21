@@ -1,30 +1,37 @@
-import RPi.GPIO as GPIO
+from gpiozero import MotionSensor
+from picamera import PiCamera
 import time
+import sys
+
+# Sys Args
+PHOTO_PATH = sys.argv[0]
 
 # GPIO pin for the PIR sensor
-PIR_GPIO_PIN = 2
-
-# setup GPIO pin for the PIR (motion) sensor
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
-
-# time to wait after taking a photo in seconds
+PIR_GPIO_PIN = 4
 WAIT_TIME = 2
 
-print(GPIO.RPI_INFO)
+pir = MotionSensor(PIR_GPIO_PIN)
+camera = PiCamera()
 
 
-#  take a photo when motion is detected
-def motion_detected(pir_sensor):
-    print("wildlife-cam: Motion detected.")
+def generate_file_name():
+    return PHOTO_PATH + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
 
 
-time.sleep(2)
-print("wildlife-cam: Ready and waiting for motion.")
+def snap_photo():
+    camera.resolution = (1024, 768)
+    camera.capture(generate_file_name())
+
+
+print("wildlife-cam: Starting")
+pir.wait_for_no_motion()
 try:
-    GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=motion_detected)
     while True:
+        print("wildlife-cam: Ready and waiting for motion")
+        pir.wait_for_motion()
+        print("wildlife-cam: Motion detected.")
+        snap_photo()
         time.sleep(WAIT_TIME)
 except KeyboardInterrupt:
-    print("wildlife-cam: Stopping due to keyboard interrupt.")
-    GPIO.cleanup()
+    print("wildlife-cam: Stopping Wildlife Cam")
+    camera.close()
