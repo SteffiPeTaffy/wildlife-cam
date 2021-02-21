@@ -9,7 +9,9 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 
 # time to wait after taking a photo in seconds
-WAIT_TIME = 2
+WAIT_TIME = 5
+
+print(GPIO.RPI_INFO)
 
 
 #  take a photo when motion is detected
@@ -17,15 +19,12 @@ def motion_detected(pir_sensor):
     print("wildlife-cam: Motion detected.")
 
 
-# do the loop
-while True:
-    try:
-        print("wildlife-cam: Waiting for motion.")
-        GPIO.wait_for_edge(PIR_GPIO_PIN, GPIO.RISING)
-        motion_detected(PIR_GPIO_PIN)
-        print("wildlife-cam: Sleeping for " + str(WAIT_TIME) + " seconds.")
+time.sleep(2)
+print("wildlife-cam: Ready and waiting for motion.")
+try:
+    GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=motion_detected)
+    while True:
         time.sleep(WAIT_TIME)
-    except KeyboardInterrupt:
-        print("wildlife-cam: Stopping due to keyboard interrupt.")
-        GPIO.cleanup()
-        break
+except KeyboardInterrupt:
+    print("wildlife-cam: Stopping due to keyboard interrupt.")
+    GPIO.cleanup()
