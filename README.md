@@ -25,7 +25,7 @@
 
 ### Setup Wildlife Cam
 1. Connect to your RPi using ssh `ssh pi@<IP of RPi>` and password `raspberry`
-2. Install Wildlife cam using the one line install script `cd; rm wildlife-cam-install.sh 2>/dev/null; devwget https://raw.githubusercontent.com/SteffiPeTaffy/wildlife-cam/main/scripts/wildlife-cam-install.sh; chmod +x wildlife-cam-install.sh; ./wildlife-cam-install.sh`
+2. Install Wildlife cam using the one line install script `cd; rm wildlife-cam-install.sh 2>/dev/null; wget https://raw.githubusercontent.com/SteffiPeTaffy/wildlife-cam/main/scripts/wildlife-cam-install.sh; chmod +x wildlife-cam-install.sh; ./wildlife-cam-install.sh`
 
 
 
