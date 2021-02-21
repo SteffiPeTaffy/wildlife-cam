@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time
 
 # GPIO pin for the PIR sensor
-PIR_GPIO_PIN = 14
+PIR_GPIO_PIN = 2
 
 # setup GPIO pin for the PIR (motion) sensor
 GPIO.setmode(GPIO.BCM)
@@ -25,7 +25,7 @@ while True:
         motion_detected(PIR_GPIO_PIN)
         print("wildlife-cam: Sleeping for " + str(WAIT_TIME) + " seconds.")
         time.sleep(WAIT_TIME)
-    except:
+    except KeyboardInterrupt:
         print("wildlife-cam: Stopping due to keyboard interrupt.")
         GPIO.cleanup()
         break
