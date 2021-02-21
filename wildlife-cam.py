@@ -1,5 +1,6 @@
 from gpiozero import MotionSensor
 from picamera import PiCamera
+from pprint import pprint
 import time
 import sys
 import requests
@@ -29,13 +30,18 @@ def snap_photo(file_name):
 
 
 def send_telegram_message(file_name):
+    print("wildlife-cam: Sending Message to Telegram.")
     telegram_api_key = config['Telegram']['ApiKey']
     telegram_chat_id = config['Telegram']['ChatId']
 
-    files = {'photo': open(file_name, 'r'), 'chat_id': telegram_chat_id}
+    files = {'photo': open(file_name, 'rb'), 'chat_id': telegram_chat_id}
 
     response = requests.post("https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key),
                              files=files)
+
+    if response.status_code != 200:
+        print("wildlife-cam: Sending Message to Telegram failed.")
+        pprint(response.json())
 
 
 def handle_motion_detected():
