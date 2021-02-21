@@ -4,6 +4,7 @@ import time
 import sys
 import requests
 import configparser
+import pysftp
 
 # Sys Args
 CONFIG_FILE_PATH = sys.argv[1]
@@ -44,6 +45,23 @@ def send_telegram_message(file_name):
         print("wildlife-cam: Sending Message to Telegram failed.")
 
 
+def upload_to_sftp(file_name):
+    print("wildlife-cam: Upload Photo to SFTP.")
+    sftp_host = config['SFTP']['IpAddress']
+    sftp_port = int(config['SFTP']['Port'])
+    sftp_username = config['SFTP']['Username']
+    sftp_password = config['SFTP']['Password']
+    sft_dir = config['SFTP']['Directory']
+
+    srv = pysftp.Connection(host=sftp_host, port=sftp_port, username=sftp_username,
+                            password=sftp_password)
+
+    with srv.cd(sft_dir):
+        srv.put(file_name)
+
+    srv.close()
+
+
 def handle_motion_detected(pir_sensor):
     print("wildlife-cam: Motion detected.")
 
@@ -52,6 +70,9 @@ def handle_motion_detected(pir_sensor):
 
     if config.has_section('Telegram'):
         send_telegram_message(file_name)
+
+    if config.has_section('SFTP'):
+        upload_to_sftp(file_name)
 
 
 print("wildlife-cam: Starting")

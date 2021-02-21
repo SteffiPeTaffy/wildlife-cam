@@ -40,11 +40,19 @@ sudo apt-get --yes install python3-smbus
 sudo apt-get --yes install git
 sudo apt-get install --yes python3-picamera
 sudo apt-get install --yes python3-requests
+sudo apt install --yes python3-pip
+pip3 install pysftp
 
 # Check if Wildlife Cam folder already exists
 cd ${HOME_DIR} || exit
 if [ -d "${HOME_DIR}${BASE_DIR_NAME}" ]; then
-
+  echo
+  echo " _
+        | |
+        | |
+        |_|
+        (_)"
+  echo
   echo "It looks like you have already installed Wildlife Cam"
   echo "Installing it again will delete all photos and configurations"
   echo -n "Continue anyways? [y/n]"
@@ -75,10 +83,29 @@ read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     read -rp "Type Telegram API Token (like 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11): " TELEGRAM_API_TOKEN
     read -rp "Type Telegram Chat ID (like 0123456789): " TELEGRAM_CHAT_ID
-    echo ""
+    echo
     echo -e "[Telegram]" >> ${CONFIG_FILE_NAME}
     echo -e "ApiKey=$TELEGRAM_API_TOKEN" >> ${CONFIG_FILE_NAME}
     echo -e "ChatId=$TELEGRAM_CHAT_ID" >> ${CONFIG_FILE_NAME}
+    echo -e "" >> ${CONFIG_FILE_NAME}
+fi
+
+# Configure SFTP Upload
+echo -n "Want to setup SFTP Upload? [y/n]"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    read -rp "Type IP Address (like 192.168.x.x): " SFTP_IP_ADDRESS
+    read -rp "Type Port (like 21): " SFTP_PORT
+    read -rp "Username: " SFTP_USER
+    read -rp "Password: " SFTP_PASSWORD
+    read -rp "Directory (e.g. WildlifeCamPhotos): " SFTP_DIR
+    echo
+    echo -e "[SFTP]" >> ${CONFIG_FILE_NAME}
+    echo -e "IpAddress=$SFTP_IP_ADDRESS" >> ${CONFIG_FILE_NAME}
+    echo -e "Port=$SFTP_PORT" >> ${CONFIG_FILE_NAME}
+    echo -e "Username=$SFTP_USER" >> ${CONFIG_FILE_NAME}
+    echo -e "Password=$SFTP_PASSWORD" >> ${CONFIG_FILE_NAME}
+    echo -e "Directory=$SFTP_DIR" >> ${CONFIG_FILE_NAME}
     echo -e "" >> ${CONFIG_FILE_NAME}
 fi
 
