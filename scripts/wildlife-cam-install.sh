@@ -47,7 +47,8 @@ pip3 install pysftp
 cd ${HOME_DIR} || exit
 if [ -d "${HOME_DIR}${BASE_DIR_NAME}" ]; then
   echo
-  echo " _
+  echo "
+         _
         | |
         | |
         |_|
