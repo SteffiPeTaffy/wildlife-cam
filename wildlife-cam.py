@@ -22,10 +22,6 @@ GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 camera = PiCamera()
 
 
-def generate_file_name():
-    return photo_dir_path + time.strftime("%Y-%m-%d-%H-%M-%S", time.localtime()) + ".jpeg"
-
-
 def snap_photo(file_path):
     camera.resolution = (1024, 768)
     camera.capture(file_path)
@@ -45,7 +41,7 @@ def send_telegram_message(file_path):
         print("wildlife-cam: Sending Message to Telegram failed.")
 
 
-def upload_to_sftp(file_name):
+def upload_to_sftp(sub_folder_name, file_name):
     print("wildlife-cam: Upload Photo to SFTP.")
     sftp_host = config['SFTP']['IpAddress']
     sftp_port = int(config['SFTP']['Port'])
@@ -59,7 +55,10 @@ def upload_to_sftp(file_name):
                             password=sftp_password, cnopts=cnopts)
 
     with srv.cd(sftp_dir):
-        srv.put(file_name)
+        if not srv.exists(sub_folder_name):
+            srv.mkdir(sub_folder_name)
+        with srv.cd(sub_folder_name):
+            srv.put(file_name)
 
     srv.close()
 
@@ -68,18 +67,20 @@ def handle_motion_detected(pir_sensor):
     print("wildlife-cam: Motion detected.")
     photo_dir_path = config['General']['PhotoDirPath']
 
-    folder_path = photo_dir_path + time.strftime("%Y-%m-%d", time.localtime())
-    Path(folder_path).mkdir(parents=True, exist_ok=True)
+    current_time = time.localtime()
+    sub_folder_name = time.strftime("%Y-%m-%d", current_time)
+    sub_folder_path = photo_dir_path + sub_folder_name + "/"
+    Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
 
-    file_name = time.strftime("%H-%M-%S", time.localtime()) + ".jpeg"
-    file_path = folder_path + "/" + file_name
+    file_name = time.strftime("%Y-%m-%d-%H-%M-%S", current_time) + ".jpeg"
+    file_path = sub_folder_path + file_name
     snap_photo(file_path)
 
     if config.has_section('Telegram'):
         send_telegram_message(file_path)
 
     if config.has_section('SFTP'):
-        upload_to_sftp(file_path)
+        upload_to_sftp(sub_folder_name, file_name)
 
 
 print("wildlife-cam: Starting")
