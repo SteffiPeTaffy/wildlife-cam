@@ -44,7 +44,7 @@ sudo apt install --yes python3-pip
 pip3 install pysftp
 
 # Install wildlife-cam-web dependencies
-sudo pip3 install flask
+pip3 install flask
 
 
 # Check if Wildlife Cam folder already exists
