@@ -36,25 +36,15 @@ sudo apt-get --yes install python3
 sudo apt-get --yes install python3-rpi.gpio
 sudo apt-get --yes install python3-smbus
 
-# Install dependencies
+# Install wildlife-cam dependencies
 sudo apt-get --yes install git
 sudo apt-get install --yes python3-picamera
 sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
 
-# Install dildlife-cam-web dependencies
-sudo apt-get --yes install libatlas-base-dev
-sudo apt-get --yes install libjasper-dev
-sudo apt-get --yes install libqtgui4
-sudo apt-get --yes install libqt4-test
-sudo apt-get --yes install libhdf5-dev
-
+# Install wildlife-cam-web dependencies
 sudo pip3 install flask
-sudo pip3 install numpy
-sudo pip3 install opencv-contrib-python
-sudo pip3 install imutils
-sudo pip3 install opencv-python
 
 
 # Check if Wildlife Cam folder already exists
