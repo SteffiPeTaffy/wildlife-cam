@@ -43,6 +43,20 @@ sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
 
+# Install dildlife-cam-web dependencies
+sudo apt-get --yes install libatlas-base-dev
+sudo apt-get --yes install libjasper-dev
+sudo apt-get --yes install libqtgui4
+sudo apt-get --yes install libqt4-test
+sudo apt-get --yes install libhdf5-dev
+
+sudo pip3 --yes install flask
+sudo pip3 --yes install numpy
+sudo pip3 --yes install opencv-contrib-python
+sudo pip3 --yes install imutils
+sudo pip3 --yes install opencv-python
+
+
 # Check if Wildlife Cam folder already exists
 cd ${HOME_DIR} || exit
 if [ -d "${HOME_DIR}${BASE_DIR_NAME}" ]; then
