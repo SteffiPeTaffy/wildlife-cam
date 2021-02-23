@@ -3,15 +3,13 @@ from pathlib import Path
 import RPi.GPIO as GPIO
 from logzero import logger, logfile
 import time
-import sys
 import requests
 import configparser
 import pysftp
 
-# Sys Args
-CONFIG_FILE_PATH = sys.argv[1]
+# Load Config File
 config = configparser.ConfigParser()
-config.read(CONFIG_FILE_PATH)
+config.read("/home/pi/WildlifeCam/WildlifeCam.ini")
 
 WAIT_TIME = 2
 

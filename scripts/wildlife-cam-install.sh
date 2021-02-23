@@ -120,13 +120,16 @@ fi
 # Get github code
 git clone https://github.com/SteffiPeTaffy/wildlife-cam.git ${GIT_BASE_DIR_NAME}
 
+# Create wildlife-cam.service
+cd "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}" || exit
+sudo mv wildlife-cam.service /etc/systemd/system/
+chmod u+x "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}wildlife-cam.py"
+sudo systemctl start wildlife-cam
+sudo systemctl enable wildlife-cam
+
 echo
 echo "DONE. Let's watch some squirrels :)"
 echo "Find more information on the github account:"
 echo "https://github.com/SteffiPeTaffy/wildlife-cam"
 echo ""
-
-# run wildlife cam
-cd "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}" || exit
-python3 wildlife-cam.py "${HOME_DIR}${BASE_DIR_NAME}${CONFIG_FILE_NAME}"
 
