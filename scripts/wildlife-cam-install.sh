@@ -13,7 +13,7 @@ clear
 echo "#####################################################
 #            _ _    _ _ _  __                       #
 #    __ __ _(_) |__| | (_)/ _|___   __ __ _ _ __    #
-#    \ V  V / | / _` | | |  _/ -_) / _/ _` | '  \   #
+#    \ V  V / | / _\` | | |  _/ -_) / _/ _\` | '  \ #
 #     \_/\_/|_|_\__,_|_|_|_| \___| \__\__,_|_|_|_|  #
 #                                                   #
 #####################################################
@@ -23,7 +23,7 @@ Welcome to the installation script.
 This script will install Wildlife Cam on your Raspberry Pi.
 If you are ready, hit ENTER"
 
-read -r INPUT
+read -r
 
 # Make sure everything is up-to-date
 sudo apt-get update
@@ -40,10 +40,10 @@ sudo apt-get --yes install python3-smbus
 # Install wildlife-cam dependencies
 sudo apt-get --yes install git
 sudo apt-get install --yes python3-picamera
-sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
 pip3 install logzero
+pip3 install telepot
 
 # Install wildlife-cam-web dependencies
 pip3 install flask
@@ -63,7 +63,7 @@ if [ -d "${HOME_DIR}${BASE_DIR_NAME}" ]; then
   echo "It looks like you have already installed Wildlife Cam"
   echo "Installing it again will delete all photos and configurations"
   echo -n "Continue anyways? [y/n]"
-  read answer
+  read -r answer
   if [ "$answer" != "${answer#[Nn]}" ] ;then
       exit 1
   else
@@ -73,34 +73,39 @@ fi
 
 # Create folder for all Wildlife Cam related artefacts
 mkdir ${BASE_DIR_NAME}
-cd ${BASE_DIR_NAME}
+cd ${BASE_DIR_NAME} || exit
 
 # create config file
 touch ${CONFIG_FILE_NAME}
 
 # create folder for photos
 mkdir ${PHOTO_DIR_NAME}
-echo -e "[General]" >> ${CONFIG_FILE_NAME}
-echo -e "PhotoDirPath=${HOME_DIR}${BASE_DIR_NAME}${PHOTO_DIR_NAME}" >> ${CONFIG_FILE_NAME}
-echo -e "LogDirPath=${HOME_DIR}${BASE_DIR_NAME}${LOG_DIR_NAME}" >> ${CONFIG_FILE_NAME}
-echo -e "" >> ${CONFIG_FILE_NAME}
+{
+  echo "[General]"
+ "PhotoDirPath=${HOME_DIR}${BASE_DIR_NAME}${PHOTO_DIR_NAME}"
+ "LogDirPath=${HOME_DIR}${BASE_DIR_NAME}${LOG_DIR_NAME}"
+ ""
+} >> ${CONFIG_FILE_NAME}
 
 # Configure Telegram
 echo -n "Want to setup Telegram? [y/n]"
-read answer
+read -r answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     read -rp "Type Telegram API Token (like 123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11): " TELEGRAM_API_TOKEN
     read -rp "Type Telegram Chat ID (like 0123456789): " TELEGRAM_CHAT_ID
     echo
-    echo -e "[Telegram]" >> ${CONFIG_FILE_NAME}
-    echo -e "ApiKey=$TELEGRAM_API_TOKEN" >> ${CONFIG_FILE_NAME}
-    echo -e "ChatId=$TELEGRAM_CHAT_ID" >> ${CONFIG_FILE_NAME}
-    echo -e "" >> ${CONFIG_FILE_NAME}
+    {
+      echo "[Telegram]"
+      "ApiKey=$TELEGRAM_API_TOKEN"
+      "ChatId=$TELEGRAM_CHAT_ID"
+      ""
+    } >> ${CONFIG_FILE_NAME}
+
 fi
 
 # Configure SFTP Upload
 echo -n "Want to setup SFTP Upload? [y/n]"
-read answer
+read -r answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     read -rp "Type IP Address (like 192.168.x.x): " SFTP_IP_ADDRESS
     read -rp "Type Port (like 21): " SFTP_PORT
@@ -108,13 +113,15 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     read -rp "Password: " SFTP_PASSWORD
     read -rp "Directory (e.g. WildlifeCamPhotos): " SFTP_DIR
     echo
-    echo -e "[SFTP]" >> ${CONFIG_FILE_NAME}
-    echo -e "IpAddress=$SFTP_IP_ADDRESS" >> ${CONFIG_FILE_NAME}
-    echo -e "Port=$SFTP_PORT" >> ${CONFIG_FILE_NAME}
-    echo -e "Username=$SFTP_USER" >> ${CONFIG_FILE_NAME}
-    echo -e "Password=$SFTP_PASSWORD" >> ${CONFIG_FILE_NAME}
-    echo -e "Directory=$SFTP_DIR" >> ${CONFIG_FILE_NAME}
-    echo -e "" >> ${CONFIG_FILE_NAME}
+    {
+      echo "[SFTP]"
+      "IpAddress=$SFTP_IP_ADDRESS"
+      "Port=$SFTP_PORT"
+      "Username=$SFTP_USER"
+      "Password=$SFTP_PASSWORD"
+      "Directory=$SFTP_DIR"
+      ""
+    } >> ${CONFIG_FILE_NAME}
 fi
 
 # Get github code

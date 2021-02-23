@@ -5,9 +5,9 @@ from pathlib import Path
 import RPi.GPIO as GPIO
 from logzero import logger, logfile
 import time
-import requests
 import configparser
 import pysftp
+import telepot
 
 # Load Config File
 config = configparser.ConfigParser()
@@ -23,9 +23,35 @@ GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
 camera = PiCamera()
 
 
-def snap_photo(file_path):
+def handle_telegram_message(msg):
+    chat_id = config['Telegram']['ChatId']
+    command = msg['text']
+
+    if msg['chat']['id'] != chat_id:
+        logger.warn("wildlife-cam: Got telegram message from unknown chat id: %s %s", chat_id, command)
+        return
+
+    logger.info("wildlife-cam: Got telegram command: %s", command)
+    if command == 'snap':
+        _, file_path = snap_photo()
+        send_telegram_message(file_path)
+
+
+def snap_photo():
+    photo_dir_path = config['General']['PhotoDirPath']
+
+    current_time = time.localtime()
+    sub_folder_name = time.strftime("%Y-%m-%d", current_time)
+    sub_folder_path = photo_dir_path + sub_folder_name + "/"
+    Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
+
+    file_name = time.strftime("%Y-%m-%d-%H-%M-%S", current_time) + ".jpeg"
+    file_path = sub_folder_path + file_name
+
     camera.resolution = (1024, 768)
     camera.capture(file_path)
+
+    return [sub_folder_name, file_path]
 
 
 def setup_logging():
@@ -35,16 +61,8 @@ def setup_logging():
 
 def send_telegram_message(file_path):
     logger.info("wildlife-cam: Sending Message to Telegram.")
-    telegram_api_key = config['Telegram']['ApiKey']
-    telegram_chat_id = config['Telegram']['ChatId']
-
-    url = "https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key)
-    payload = {'chat_id': telegram_chat_id}
-    files = [('photo', ('wildlife.jpg', open(file_path, 'rb'), 'image/jpeg'))]
-    response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
-
-    if response.status_code != 200:
-        logger.error("wildlife-cam: Sending Message to Telegram failed.")
+    chat_id = config['Telegram']['ChatId']
+    bot.sendPhoto(chat_id, photo=open(file_path, 'rb'))
 
 
 def upload_to_sftp(sub_folder_name, file_path):
@@ -71,17 +89,8 @@ def upload_to_sftp(sub_folder_name, file_path):
 
 def handle_motion_detected(pir_sensor):
     logger.info("wildlife-cam: Motion detected.")
-    photo_dir_path = config['General']['PhotoDirPath']
 
-    current_time = time.localtime()
-    sub_folder_name = time.strftime("%Y-%m-%d", current_time)
-    sub_folder_path = photo_dir_path + sub_folder_name + "/"
-    Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
-
-    file_name = time.strftime("%Y-%m-%d-%H-%M-%S", current_time) + ".jpeg"
-    file_path = sub_folder_path + file_name
-
-    snap_photo(file_path)
+    sub_folder_name, file_path = snap_photo()
 
     if config.has_section('Telegram'):
         send_telegram_message(file_path)
@@ -92,6 +101,9 @@ def handle_motion_detected(pir_sensor):
 
 logger.info("wildlife-cam: Starting")
 time.sleep(2)
+if config.has_section('Telegram'):
+    bot = telepot.Bot(config['Telegram']['ApiKey'])
+    bot.message_loop(handle_telegram_message)
 try:
     logger.info("wildlife-cam: Ready and waiting for motion")
     GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
