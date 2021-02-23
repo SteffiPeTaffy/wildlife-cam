@@ -5,6 +5,7 @@
 readonly HOME_DIR=/home/pi/
 readonly BASE_DIR_NAME=WildlifeCam/
 readonly PHOTO_DIR_NAME=Photos/
+readonly LOG_DIR_NAME=Logs/
 readonly GIT_BASE_DIR_NAME=wildlife-cam
 readonly CONFIG_FILE_NAME=WildlifeCam.ini
 
@@ -42,6 +43,7 @@ sudo apt-get install --yes python3-picamera
 sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
+pip3 install logzero
 
 # Install wildlife-cam-web dependencies
 pip3 install flask
@@ -80,6 +82,7 @@ touch ${CONFIG_FILE_NAME}
 mkdir ${PHOTO_DIR_NAME}
 echo -e "[General]" >> ${CONFIG_FILE_NAME}
 echo -e "PhotoDirPath=${HOME_DIR}${BASE_DIR_NAME}${PHOTO_DIR_NAME}" >> ${CONFIG_FILE_NAME}
+echo -e "LogDirPath=${HOME_DIR}${BASE_DIR_NAME}${LOG_DIR_NAME}" >> ${CONFIG_FILE_NAME}
 echo -e "" >> ${CONFIG_FILE_NAME}
 
 # Configure Telegram

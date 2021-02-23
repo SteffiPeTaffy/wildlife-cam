@@ -1,6 +1,7 @@
 from picamera import PiCamera
 from pathlib import Path
 import RPi.GPIO as GPIO
+from logzero import logger, logfile
 import time
 import sys
 import requests
@@ -27,8 +28,13 @@ def snap_photo(file_path):
     camera.capture(file_path)
 
 
+def setup_logging():
+    log_dir_path = config['General']['LogDirPath']
+    logfile(log_dir_path + "wildlife-cam.log", maxBytes=1e6, backupCount=3)
+
+
 def send_telegram_message(file_path):
-    print("wildlife-cam: Sending Message to Telegram.")
+    logger.info("wildlife-cam: Sending Message to Telegram.")
     telegram_api_key = config['Telegram']['ApiKey']
     telegram_chat_id = config['Telegram']['ChatId']
 
@@ -38,11 +44,11 @@ def send_telegram_message(file_path):
     response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
 
     if response.status_code != 200:
-        print("wildlife-cam: Sending Message to Telegram failed.")
+        logger.error("wildlife-cam: Sending Message to Telegram failed.")
 
 
 def upload_to_sftp(sub_folder_name, file_path):
-    print("wildlife-cam: Upload Photo to SFTP.")
+    logger.info("wildlife-cam: Upload Photo to SFTP.")
     sftp_host = config['SFTP']['IpAddress']
     sftp_port = int(config['SFTP']['Port'])
     sftp_username = config['SFTP']['Username']
@@ -64,7 +70,7 @@ def upload_to_sftp(sub_folder_name, file_path):
 
 
 def handle_motion_detected(pir_sensor):
-    print("wildlife-cam: Motion detected.")
+    logger.info("wildlife-cam: Motion detected.")
     photo_dir_path = config['General']['PhotoDirPath']
 
     current_time = time.localtime()
@@ -84,14 +90,14 @@ def handle_motion_detected(pir_sensor):
         upload_to_sftp(sub_folder_name, file_path)
 
 
-print("wildlife-cam: Starting")
+logger.info("wildlife-cam: Starting")
 time.sleep(2)
 try:
-    print("wildlife-cam: Ready and waiting for motion")
+    logger.info("wildlife-cam: Ready and waiting for motion")
     GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
     while True:
         time.sleep(WAIT_TIME)
 except KeyboardInterrupt:
-    print("wildlife-cam: Stopping Wildlife Cam")
+    logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
     GPIO.cleanup()
