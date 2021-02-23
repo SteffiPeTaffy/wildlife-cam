@@ -8,12 +8,11 @@ import time
 import configparser
 import pysftp
 import telepot
+import requests
 
 # Load Config File
 config = configparser.ConfigParser()
 config.read("/home/pi/WildlifeCam/WildlifeCam.ini")
-
-WAIT_TIME = 2
 
 # GPIO pin for the PIR sensor
 PIR_GPIO_PIN = 4
@@ -24,10 +23,9 @@ camera = PiCamera()
 
 
 def handle_telegram_message(msg):
-    logger.debug("wildlife-cam: Got telegram message: %s", msg)
+    logger.info("wildlife-cam: Got telegram message")
 
     chat_id = config['Telegram']['ChatId']
-
     message_chat_id = str(msg['chat']['id'])
     if message_chat_id != chat_id:
         logger.warning("wildlife-cam: Got telegram message from unknown chat id: %s", message_chat_id)
@@ -35,11 +33,13 @@ def handle_telegram_message(msg):
 
     message_text = msg['text']
     if message_text.startswith('/snap'):
+        logger.info("wildlife-cam: Got telegram command to snap a photo")
         _, file_path = snap_photo()
         send_telegram_message(file_path)
 
 
 def snap_photo():
+    logger.info("wildlife-cam: Capturing a photo")
     photo_dir_path = config['General']['PhotoDirPath']
 
     current_time = time.localtime()
@@ -53,6 +53,8 @@ def snap_photo():
     camera.resolution = (1024, 768)
     camera.capture(file_path)
 
+    logger.info("wildlife-cam: Photo saved at %s", file_path)
+
     return [sub_folder_name, file_path]
 
 
@@ -63,8 +65,16 @@ def setup_logging():
 
 def send_telegram_message(file_path):
     logger.info("wildlife-cam: Sending Message to Telegram.")
-    chat_id = config['Telegram']['ChatId']
-    bot.sendPhoto(chat_id, photo=open(file_path, 'rb'))
+    telegram_api_key = config['Telegram']['ApiKey']
+    telegram_chat_id = config['Telegram']['ChatId']
+
+    url = "https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key)
+    payload = {'chat_id': telegram_chat_id}
+    files = [('photo', ('wildlife.jpg', open(file_path, 'rb'), 'image/jpeg'))]
+    response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
+
+    if response.status_code != 200:
+        print("wildlife-cam: Sending Message to Telegram failed.")
 
 
 def upload_to_sftp(sub_folder_name, file_path):
@@ -110,7 +120,7 @@ try:
     logger.info("wildlife-cam: Ready and waiting for motion")
     GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
     while True:
-        time.sleep(WAIT_TIME)
+        time.sleep(2)
 except KeyboardInterrupt:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
