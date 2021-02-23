@@ -27,8 +27,10 @@ def handle_telegram_message(msg):
     chat_id = config['Telegram']['ChatId']
     command = msg['text']
 
-    if msg['chat']['id'] != chat_id:
-        logger.warn("wildlife-cam: Got telegram message from unknown chat id: %s %s", chat_id, command)
+    message_chat_id = msg['chat']['id']
+    if message_chat_id != chat_id:
+        logger.warning("wildlife-cam: Got telegram message from unknown chat id: %s %s", message_chat_id, command)
+        logger.debug(msg)
         return
 
     logger.info("wildlife-cam: Got telegram command: %s", command)
