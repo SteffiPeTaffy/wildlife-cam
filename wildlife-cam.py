@@ -24,17 +24,17 @@ camera = PiCamera()
 
 
 def handle_telegram_message(msg):
+    logger.debug("wildlife-cam: Got telegram message: %s", msg)
+
     chat_id = config['Telegram']['ChatId']
-    command = msg['text']
 
     message_chat_id = msg['chat']['id']
     if message_chat_id != chat_id:
-        logger.warning("wildlife-cam: Got telegram message from unknown chat id: %s %s", message_chat_id, command)
-        logger.debug(msg)
+        logger.warning("wildlife-cam: Got telegram message from unknown chat id: %s", message_chat_id)
         return
 
-    logger.info("wildlife-cam: Got telegram command: %s", command)
-    if command == 'snap':
+    message_text = msg['text']
+    if message_text.startswith('/snap'):
         _, file_path = snap_photo()
         send_telegram_message(file_path)
 
