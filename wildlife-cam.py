@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 from picamera import PiCamera
 from pathlib import Path
 import RPi.GPIO as GPIO
