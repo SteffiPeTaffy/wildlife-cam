@@ -2,7 +2,7 @@
 Description=Wildlife Cam
 
 [Service]
-ExecStart=/home/pi/WildlifeCam/wildlife-cam/wildlife-cam.py
+ExecStart=/usr/bin/python3 /home/pi/WildlifeCam/wildlife-cam/wildlife-cam.py
 Restart=on-failure
 RestartSec=30
 StartLimitInterval=350
