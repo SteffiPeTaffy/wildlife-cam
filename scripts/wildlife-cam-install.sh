@@ -122,7 +122,7 @@ git clone https://github.com/SteffiPeTaffy/wildlife-cam.git ${GIT_BASE_DIR_NAME}
 
 # Create wildlife-cam.service
 cd "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}" || exit
-sudo mv wildlife-cam.service /etc/systemd/system/
+sudo cp wildlife-cam.service /etc/systemd/system/
 chmod u+x "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}wildlife-cam.py"
 sudo systemctl start wildlife-cam
 sudo systemctl enable wildlife-cam

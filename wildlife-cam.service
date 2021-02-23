@@ -4,6 +4,9 @@ Description=Wildlife Cam
 [Service]
 ExecStart=/home/pi/WildlifeCam/wildlife-cam/wildlife-cam.py
 Restart=on-failure
+RestartSec=30
+StartLimitInterval=350
+StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target
