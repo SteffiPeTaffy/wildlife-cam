@@ -9,6 +9,8 @@ import configparser
 import pysftp
 import telepot
 import requests
+import threading, queue
+import os
 
 # Load Config File
 config = configparser.ConfigParser()
@@ -18,8 +20,6 @@ config.read("/home/pi/WildlifeCam/WildlifeCam.ini")
 PIR_GPIO_PIN = 4
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(PIR_GPIO_PIN, GPIO.IN)
-
-camera = PiCamera()
 
 
 def handle_telegram_message(msg):
@@ -34,8 +34,7 @@ def handle_telegram_message(msg):
     message_text = msg['text']
     if message_text.startswith('/snap'):
         logger.info("wildlife-cam: Got telegram command to snap a photo")
-        _, file_path = snap_photo()
-        send_telegram_message(file_path)
+        snap_photo()
 
 
 def snap_photo():
@@ -55,7 +54,7 @@ def snap_photo():
 
     logger.info("wildlife-cam: Photo saved at %s", file_path)
 
-    return [sub_folder_name, file_path]
+    image_processing_queue.put(file_path)
 
 
 def setup_logging():
@@ -77,7 +76,7 @@ def send_telegram_message(file_path):
         print("wildlife-cam: Sending Message to Telegram failed.")
 
 
-def upload_to_sftp(sub_folder_name, file_path):
+def upload_to_sftp(file_path):
     logger.info("wildlife-cam: Upload Photo to SFTP.")
     sftp_host = config['SFTP']['IpAddress']
     sftp_port = int(config['SFTP']['Port'])
@@ -90,6 +89,9 @@ def upload_to_sftp(sub_folder_name, file_path):
     srv = pysftp.Connection(host=sftp_host, port=sftp_port, username=sftp_username,
                             password=sftp_password, cnopts=cnopts)
 
+    base_path, _ = os.path.split(file_path)
+    _, sub_folder_name = os.path.split(base_path)
+
     with srv.cd(sftp_dir):
         if not srv.exists(sub_folder_name):
             srv.mkdir(sub_folder_name)
@@ -99,23 +101,47 @@ def upload_to_sftp(sub_folder_name, file_path):
     srv.close()
 
 
-def handle_motion_detected(pir_sensor):
-    logger.info("wildlife-cam: Motion detected.")
+class Worker(threading.Thread):
+    def __init__(self, q, *args, **kwargs):
+        self.q = q
+        super().__init__(*args, **kwargs)
 
-    sub_folder_name, file_path = snap_photo()
+    def run(self):
+        while True:
+            try:
+                file_path = self.q.get(timeout=3)  # 3s timeout
+            except queue.Queue.Empty:
+                return
+            process_image(file_path)
+            self.q.task_done()
 
+
+def process_image(file_path):
     if config.has_section('Telegram'):
         send_telegram_message(file_path)
 
     if config.has_section('SFTP'):
-        upload_to_sftp(sub_folder_name, file_path)
+        upload_to_sftp(file_path)
+
+
+def handle_motion_detected(pir_sensor):
+    logger.info("wildlife-cam: Motion detected.")
+    snap_photo()
 
 
 logger.info("wildlife-cam: Starting")
 time.sleep(2)
+
+camera = PiCamera()
+
+image_processing_queue = queue.Queue()
+
 if config.has_section('Telegram'):
     bot = telepot.Bot(config['Telegram']['ApiKey'])
     bot.message_loop(handle_telegram_message)
+
+Worker(image_processing_queue).start()
+
 try:
     logger.info("wildlife-cam: Ready and waiting for motion")
     GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
@@ -125,3 +151,4 @@ except KeyboardInterrupt:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
     GPIO.cleanup()
+    image_processing_queue.join()

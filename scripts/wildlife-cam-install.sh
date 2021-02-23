@@ -40,6 +40,7 @@ sudo apt-get --yes install python3-smbus
 # Install wildlife-cam dependencies
 sudo apt-get --yes install git
 sudo apt-get install --yes python3-picamera
+sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
 pip3 install logzero
