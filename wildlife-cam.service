@@ -1,0 +1,9 @@
+[Unit]
+Description=Wildlife Cam
+
+[Service]
+ExecStart=/home/pi/WildlifeCam/wildlife-cam/wildlife-cam.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
