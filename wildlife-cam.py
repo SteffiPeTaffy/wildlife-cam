@@ -110,7 +110,7 @@ class Worker(threading.Thread):
         while True:
             try:
                 file_path = self.q.get(timeout=3)  # 3s timeout
-            except queue.Queue.Empty:
+            except queue.Empty:
                 return
             process_image(file_path)
             self.q.task_done()
