@@ -64,16 +64,10 @@ def setup_logging():
 
 def send_telegram_message(file_path):
     logger.info("wildlife-cam: Sending Message to Telegram.")
-    telegram_api_key = config['Telegram']['ApiKey']
     telegram_chat_id = config['Telegram']['ChatId']
 
-    url = "https://api.telegram.org/bot{api_key}/sendPhoto".format(api_key=telegram_api_key)
-    payload = {'chat_id': telegram_chat_id}
-    files = [('photo', ('wildlife.jpg', open(file_path, 'rb'), 'image/jpeg'))]
-    response = requests.request("POST", url, data=payload, files=files, timeout=1.5)
-
-    if response.status_code != 200:
-        print("wildlife-cam: Sending Message to Telegram failed.")
+    with open(file_path, 'rb') as photo:
+        bot.sendPhoto(telegram_chat_id, photo)
 
 
 def upload_to_sftp(file_path):
