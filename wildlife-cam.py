@@ -9,7 +9,7 @@ import configparser
 import pysftp
 import telepot
 import requests
-import threading, queue
+from multiprocessing import Process, Queue
 import os
 
 # Load Config File
@@ -101,7 +101,7 @@ def upload_to_sftp(file_path):
     srv.close()
 
 
-class Worker(threading.Thread):
+class Worker(Process):
     def __init__(self, q, *args, **kwargs):
         self.q = q
         super().__init__(*args, **kwargs)
@@ -109,7 +109,7 @@ class Worker(threading.Thread):
     def run(self):
         while True:
             if not self.q.empty():
-                file_path = self.q.get(timeout=3)  # 3s timeout
+                file_path = self.q.get(timeout=3)
                 process_image(file_path)
                 self.q.task_done()
 
@@ -132,13 +132,14 @@ time.sleep(2)
 
 camera = PiCamera()
 
-image_processing_queue = queue.Queue()
 
 if config.has_section('Telegram'):
     bot = telepot.Bot(config['Telegram']['ApiKey'])
     bot.message_loop(handle_telegram_message)
 
-Worker(image_processing_queue).start()
+image_processing_queue = Queue()
+image_processing_worker = Worker(image_processing_queue)
+image_processing_worker.start()
 
 try:
     logger.info("wildlife-cam: Ready and waiting for motion")
@@ -149,4 +150,4 @@ except KeyboardInterrupt:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
     GPIO.cleanup()
-    image_processing_queue.join()
+    image_processing_worker.join()
