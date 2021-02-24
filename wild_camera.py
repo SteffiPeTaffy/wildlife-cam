@@ -1,12 +1,12 @@
 from picamera import PiCamera
 from pathlib import Path
 import time
+from logzero import logger
 
 
 class Camera(PiCamera):
     def __init__(self, camera_config, *args, **kwargs):
         self.photo_dir_path = camera_config['PhotoDirPath']
-        self.resolution = (1024, 768)
         self.handlers = []
         super().__init__(*args, **kwargs)
 
@@ -20,6 +20,7 @@ class Camera(PiCamera):
         file_path = sub_folder_path + file_name
 
         self.capture(file_path)
+        logger.info("wildlife-cam: Snapped Photo %s ", file_path)
 
         for handler in self.handlers:
             handler(file_path)

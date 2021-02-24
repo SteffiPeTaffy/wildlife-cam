@@ -31,15 +31,21 @@ def handle_motion_detected(pir_sensor):
 
 
 logger.info("wildlife-cam: Starting")
-time.sleep(2)
 
 camera = Camera(config['General'])
+camera.resolution = (1024, 768)
+time.sleep(2)
 
 if config.has_section('Telegram'):
+    logger.info("wildlife-cam: Setting up Telegram")
     telegram = Telegram(config['Telegram'])
+    # telegram.add_command_handler("snap", camera.snap_photo)
+    # telegram.start_polling()
+    telegram.idle()
     camera.add_snap_handler(telegram.queue.put_nowait)
 
 if config.has_section('SFTP'):
+    logger.info("wildlife-cam: Setting up FTP Upload")
     ftp_uploader = Uploader(config['SFTP'])
     camera.add_snap_handler(ftp_uploader.queue.put_nowait)
 

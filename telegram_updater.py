@@ -1,4 +1,4 @@
-from telegram import Updater, CommandHandler, Filters
+from telegram.ext import Updater, CommandHandler, Filters
 from queue_worker import Worker
 from multiprocessing import Queue
 
@@ -11,15 +11,12 @@ class Telegram(Updater):
         super().__init__(self.api_token)
 
     def run(self):
-        self.add_command_handler("snap", self.snap_photo)
-        self.start_polling()
-        self.idle()
         queue_worker = Worker(self.queue, self.send_photo)
         queue_worker.start()
 
-    def add_command_handler(self, command, handle_command_func):
-        self.dispatcher.add_handler(
-            CommandHandler(command, handle_command_func, filters=Filters.chat(id=self.allowed_chat_id)))
+    # def add_command_handler(self, command, handle_command_func):
+    #     self.dispatcher.add_handler(
+    #         CommandHandler(command, handle_command_func, filters=Filters.chat(id=self.allowed_chat_id)))
 
     def send_photo(self, photo_file_path):
         with open(photo_file_path, 'rb') as photo:

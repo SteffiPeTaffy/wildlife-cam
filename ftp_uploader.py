@@ -7,11 +7,11 @@ from queue_worker import Worker
 
 class Uploader:
     def __init__(self, config):
-        self.sftp_host = config['SFTP']['IpAddress']
-        self.sftp_port = int(config['SFTP']['Port'])
-        self.sftp_username = config['SFTP']['Username']
-        self.sftp_password = config['SFTP']['Password']
-        self.sftp_dir = config['SFTP']['Directory']
+        self.sftp_host = config['IpAddress']
+        self.sftp_port = int(config['Port'])
+        self.sftp_username = config['Username']
+        self.sftp_password = config['Password']
+        self.sftp_dir = config['Directory']
         self.queue = Queue()
 
     def run(self):
