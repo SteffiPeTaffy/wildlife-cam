@@ -8,7 +8,6 @@ import time
 import configparser
 import pysftp
 import telepot
-import requests
 from multiprocessing import Process, Queue
 import os
 
