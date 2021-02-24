@@ -44,7 +44,7 @@ sudo apt-get install --yes python3-requests
 sudo apt install --yes python3-pip
 pip3 install pysftp
 pip3 install logzero
-pip3 install telepot
+pip3 install python-telegram-bot
 
 # Install wildlife-cam-web dependencies
 pip3 install flask
