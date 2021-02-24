@@ -54,7 +54,7 @@ def snap_photo():
 
     logger.info("wildlife-cam: Photo saved at %s", file_path)
 
-    image_processing_queue.put(file_path)
+    image_processing_queue.put_nowait(file_path)
 
 
 def setup_logging():
@@ -111,7 +111,6 @@ class Worker(Process):
             if not self.q.empty():
                 file_path = self.q.get(timeout=3)
                 process_image(file_path)
-                self.q.task_done()
 
 
 def process_image(file_path):
@@ -131,7 +130,6 @@ logger.info("wildlife-cam: Starting")
 time.sleep(2)
 
 camera = PiCamera()
-
 
 if config.has_section('Telegram'):
     bot = telepot.Bot(config['Telegram']['ApiKey'])
