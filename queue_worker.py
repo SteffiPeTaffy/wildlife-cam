@@ -18,6 +18,5 @@ class Worker(Process):
         except KeyboardInterrupt:
             pass
         finally:
-            self.queue.join()
             self.join()
             self.close()

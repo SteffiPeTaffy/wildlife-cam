@@ -62,10 +62,6 @@ if config.has_section('SFTP'):
 pir_sensor_pin = int(config['PirSensor']['Pin'])
 pir_sensor = MotionSensor(pir_sensor_pin)
 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(pir_sensor_pin, GPIO.IN)
-# GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, motion_detected)
-
 try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
