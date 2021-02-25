@@ -1,3 +1,4 @@
+import time
 from multiprocessing import Process
 
 
@@ -10,6 +11,7 @@ class Worker(Process):
     def run(self):
         try:
             while True:
+                time.sleep(0.2)
                 if not self.queue.empty():
                     queue_item = self.queue.get(timeout=3)
                     self.queue_function(queue_item)
