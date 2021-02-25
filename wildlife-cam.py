@@ -19,10 +19,6 @@ logger.info("wildlife-cam: Starting")
 config = configparser.ConfigParser()
 config.read("/home/pi/WildlifeCam/WildlifeCam.ini")
 
-# Setup logging
-log_dir_path = config['General']['LogDirPath']
-logfile(log_dir_path + "wildlife-cam.log", maxBytes=1e6, backupCount=3)
-
 # Setup Camera
 camera = Camera(config['General'])
 camera.resolution = (1024, 768)
@@ -53,7 +49,7 @@ if config.has_section('SFTP'):
     ftp_worker.start()
 
 # Setup PIR sensor
-pir_sensor_pin = config['General']['Pin']
+pir_sensor_pin = int(config['PirSensor']['Pin'])
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pir_sensor_pin, GPIO.IN)
 GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, callback=lambda pir: camera.snap_photo())

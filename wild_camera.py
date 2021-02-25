@@ -26,5 +26,4 @@ class Camera(PiCamera):
             handler(file_path)
 
     def add_snap_handler(self, handler):
-        logger.debug("wildlife-cam: Registered new handler %s ", handler)
         self.handlers.append(handler)

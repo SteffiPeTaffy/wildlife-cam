@@ -88,6 +88,13 @@ mkdir ${PHOTO_DIR_NAME}
  ""
 } >> ${CONFIG_FILE_NAME}
 
+read -rp "What's the pin of your PIR sensor: " PIR_SENSOR_PIN
+{
+  echo "[PirSensor]"
+  "Pin=$PIR_SENSOR_PIN"
+  ""
+} >> ${CONFIG_FILE_NAME}
+
 # Configure Telegram
 echo -n "Want to setup Telegram? [y/n]"
 read -r answer
