@@ -1,5 +1,6 @@
 import time
 from multiprocessing import Process
+from logzero import logger
 
 
 class Worker(Process):
@@ -13,4 +14,7 @@ class Worker(Process):
             time.sleep(1)
             if not self.queue.empty():
                 queue_item = self.queue.get(timeout=3)
-                self.queue_function(queue_item)
+                try:
+                    self.queue_function(queue_item)
+                except Exception as e:
+                    logger.exception(e)
