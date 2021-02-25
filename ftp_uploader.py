@@ -12,7 +12,7 @@ class Uploader:
         self.sftp_dir = config['Directory']
 
     def upload(self, file_path):
-        logger.info("wildlife-cam: Uploading photo %s to FTP Server ", file_path)
+        logger.info("wildlife-cam: Uploading photo to FTP Server ")
 
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None

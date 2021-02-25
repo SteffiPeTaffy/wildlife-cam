@@ -18,6 +18,6 @@ class Telegram(Updater):
                            filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
     def send_photo(self, photo_file_path):
-        logger.info("wildlife-cam: Sending photo %s to Telegram chat %s ", photo_file_path, self.allowed_chat_id)
+        logger.info("wildlife-cam: Sending photo to Telegram chat %s ", self.allowed_chat_id)
         with open(photo_file_path, 'rb') as photo:
             self.bot.send_photo(chat_id=self.allowed_chat_id, photo=photo)
