@@ -11,6 +11,12 @@ from ftp_uploader import Uploader
 from multiprocessing import Queue
 from wild_camera import Camera
 
+
+def motion_detected(pir):
+    logger.info("wildlife-cam: Motion detected")
+    camera.snap_photo()
+
+
 # Load Config File
 logger.info("wildlife-cam: Starting")
 
@@ -51,7 +57,7 @@ if config.has_section('SFTP'):
 pir_sensor_pin = int(config['PirSensor']['Pin'])
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(pir_sensor_pin, GPIO.IN)
-GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, callback=lambda pir: camera.snap_photo())
+GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, motion_detected)
 
 loop = asyncio.get_event_loop()
 try:
