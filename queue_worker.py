@@ -1,4 +1,3 @@
-import asyncio
 from multiprocessing import Process
 
 
@@ -9,14 +8,14 @@ class Worker(Process):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        loop = asyncio.get_event_loop()
         try:
-            loop.run_forever()
-            if not self.queue.empty():
-                queue_item = self.queue.get(timeout=3)
-                self.queue_function(queue_item)
+            while True:
+                if not self.queue.empty():
+                    queue_item = self.queue.get(timeout=3)
+                    self.queue_function(queue_item)
+        except KeyboardInterrupt:
+            pass
         finally:
-            loop.close()
             self.queue.join()
             self.join()
             self.close()
