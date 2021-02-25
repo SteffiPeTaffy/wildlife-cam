@@ -20,7 +20,7 @@ class Camera(PiCamera):
         file_path = sub_folder_path + file_name
 
         self.capture(file_path)
-        logger.info("wildlife-cam: Snapped a Photo ")
+        logger.info("wildlife-cam: Snapped a Photo %s", file_path)
 
         for handler in self.handlers:
             handler(file_path)

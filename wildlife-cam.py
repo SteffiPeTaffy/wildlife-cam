@@ -9,13 +9,14 @@ from telegram_updater import Telegram
 from ftp_uploader import Uploader
 from multiprocessing import Queue
 from wild_camera import Camera
+from gpiozero import MotionSensor
 
 
 def motion_detected(pir):
     logger.info("wildlife-cam: Motion detected")
     camera.snap_photo()
     count = 0
-    while pir.motion_detected and count < 4:
+    while pir.motion_detected() and count < 4:
         time.sleep(0.2)
         camera.snap_photo()
         count += 1
@@ -58,8 +59,6 @@ if config.has_section('SFTP'):
     ftp_worker.start()
 
 # Setup PIR sensor
-from gpiozero import MotionSensor
-
 pir_sensor_pin = int(config['PirSensor']['Pin'])
 pir = MotionSensor(pir_sensor_pin)
 
@@ -68,12 +67,12 @@ pir = MotionSensor(pir_sensor_pin)
 # GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, motion_detected)
 
 try:
-    pir.wait_for_no_motion()
+    pir.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
     while True:
         pir.wait_for_motion()
         motion_detected(pir)
-        pir.wait_for_no_motion()
+        pir.wait_for_no_motion(10)
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
