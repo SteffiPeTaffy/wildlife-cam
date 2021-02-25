@@ -15,9 +15,10 @@ def motion_detected(pir):
     logger.info("wildlife-cam: Motion detected")
     camera.snap_photo()
     count = 0
-    while GPIO.input(pir) or count < 4:
+    while GPIO.input(pir_sensor_pin) or count < 4:
         time.sleep(0.2)
         camera.snap_photo()
+        count += 1
 
 
 # Load Config File
