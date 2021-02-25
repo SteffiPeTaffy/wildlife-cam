@@ -62,4 +62,4 @@ finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     loop.close()
     camera.close()
-    pir_sensor_pin.cleanup()
+    GPIO.cleanup()
