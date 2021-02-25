@@ -12,11 +12,6 @@ class Uploader:
         self.sftp_username = config['Username']
         self.sftp_password = config['Password']
         self.sftp_dir = config['Directory']
-        self.queue = Queue()
-
-    def run(self):
-        queue_worker = Worker(self.queue, self.upload)
-        queue_worker.start()
 
     def upload(self, file_path):
         cnopts = pysftp.CnOpts()

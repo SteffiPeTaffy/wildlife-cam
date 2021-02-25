@@ -19,4 +19,4 @@ class Worker(Process):
             loop.close()
             self.queue.join()
             self.join()
-            self.terminate()
+            self.close()

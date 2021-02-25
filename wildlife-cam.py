@@ -4,9 +4,12 @@ import RPi.GPIO as GPIO
 from logzero import logger, logfile
 import time
 import configparser
+
+from queue_worker import Worker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
 import asyncio
+from multiprocessing import Queue
 
 # Load Config File
 from wild_camera import Camera
@@ -39,15 +42,27 @@ time.sleep(2)
 if config.has_section('Telegram'):
     logger.info("wildlife-cam: Setting up Telegram")
     telegram = Telegram(config['Telegram'])
-    # telegram.add_command_handler("snap", camera.snap_photo)
-    # telegram.start_polling()
+    telegram.add_command_handler("snap", camera.snap_photo)
+    telegram.start_polling()
     telegram.idle()
-    camera.add_snap_handler(telegram.queue.put_nowait)
+
+    telegram_queue = Queue()
+    camera.add_snap_handler(telegram_queue.put_nowait)
+
+    telegram_worker = Worker(telegram_queue, telegram.send_photo)
+    telegram_worker.start()
+
 
 if config.has_section('SFTP'):
     logger.info("wildlife-cam: Setting up FTP Upload")
     ftp_uploader = Uploader(config['SFTP'])
-    camera.add_snap_handler(ftp_uploader.queue.put_nowait)
+
+    ftp_queue = Queue()
+    camera.add_snap_handler(ftp_queue.put_nowait)
+
+    ftp_worker = Worker(ftp_queue, ftp_uploader.upload)
+    ftp_worker.start()
+
 
 logger.info("wildlife-cam: Ready and waiting for motion")
 GPIO.add_event_detect(PIR_GPIO_PIN, GPIO.RISING, callback=handle_motion_detected)
