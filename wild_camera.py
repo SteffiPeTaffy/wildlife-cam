@@ -16,7 +16,7 @@ class Camera(PiCamera):
         sub_folder_path = self.photo_dir_path + sub_folder_name + "/"
         Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
 
-        file_name = time.strftime("%Y-%m-%d-%H-%M-%S", current_time) + ".jpeg"
+        file_name = time.strftime("%Y-%m-%d-%H-%M-%S.%f", current_time)[:-3] + ".jpeg"
         file_path = sub_folder_path + file_name
 
         self.capture(file_path)
