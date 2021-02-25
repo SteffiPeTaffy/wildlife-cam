@@ -1,18 +1,17 @@
 #!/usr/bin/python3
 
-from logzero import logger, logfile
 import time
 import configparser
 import RPi.GPIO as GPIO
+import asyncio
+from logzero import logger, logfile
 from queue_worker import Worker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
-import asyncio
 from multiprocessing import Queue
-
-# Load Config File
 from wild_camera import Camera
 
+# Load Config File
 logger.info("wildlife-cam: Starting")
 
 # get config file
