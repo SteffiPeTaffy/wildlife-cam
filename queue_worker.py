@@ -9,14 +9,8 @@ class Worker(Process):
         super().__init__(*args, **kwargs)
 
     def run(self):
-        try:
-            while True:
-                time.sleep(1)
-                if not self.queue.empty():
-                    queue_item = self.queue.get(timeout=3)
-                    self.queue_function(queue_item)
-        except KeyboardInterrupt:
-            pass
-        finally:
-            self.join()
-            self.close()
+        while True:
+            time.sleep(1)
+            if not self.queue.empty():
+                queue_item = self.queue.get(timeout=3)
+                self.queue_function(queue_item)
