@@ -14,11 +14,6 @@ from wild_camera import Camera
 def motion_detected(pir):
     logger.info("wildlife-cam: Motion detected")
     camera.snap_photo()
-    count = 0
-    while count < 4:
-        time.sleep(0.2)
-        camera.snap_photo()
-        count += 1
 
 
 # Load Config File
