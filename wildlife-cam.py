@@ -3,7 +3,7 @@
 from logzero import logger, logfile
 import time
 import configparser
-from pir_sensor import Sensor
+import RPi.GPIO as GPIO
 from queue_worker import Worker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
@@ -53,8 +53,10 @@ if config.has_section('SFTP'):
     ftp_worker.start()
 
 # Setup PIR sensor
-pir_sensor = Sensor(config['General'])
-pir_sensor.add_motion_detected_handler(camera.snap_photo)
+pir_sensor_pin = config['General']['Pin']
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(pir_sensor_pin, GPIO.IN)
+GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, callback=lambda pir: camera.snap_photo())
 
 loop = asyncio.get_event_loop()
 try:
@@ -64,4 +66,4 @@ finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     loop.close()
     camera.close()
-    pir_sensor.cleanup()
+    pir_sensor_pin.cleanup()
