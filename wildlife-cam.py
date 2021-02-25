@@ -3,7 +3,6 @@
 import time
 import configparser
 import RPi.GPIO as GPIO
-import asyncio
 from logzero import logger, logfile
 from queue_worker import Worker
 from telegram_updater import Telegram
@@ -59,12 +58,11 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(pir_sensor_pin, GPIO.IN)
 GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, motion_detected)
 
-loop = asyncio.get_event_loop()
 try:
     logger.info("wildlife-cam: Ready and waiting for motion")
-    loop.run_forever()
+    while True:
+        time.sleep(100)
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
-    loop.close()
     camera.close()
     GPIO.cleanup()

@@ -2,7 +2,7 @@ from telegram.ext import Updater, CommandHandler, Filters
 from logzero import logger
 import logging
 
-logging.basicConfig(level=logging.INFO,
+logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 
