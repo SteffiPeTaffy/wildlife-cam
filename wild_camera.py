@@ -1,6 +1,6 @@
 from picamera import PiCamera
 from pathlib import Path
-import time
+from datetime import datetime
 from logzero import logger
 
 
@@ -11,12 +11,12 @@ class Camera(PiCamera):
         super().__init__(*args, **kwargs)
 
     def snap_photo(self):
-        current_time = time.localtime()
-        sub_folder_name = time.strftime("%Y-%m-%d", current_time)
+        current_time = datetime.utcnow()
+        sub_folder_name = current_time.strftime("%Y-%m-%d")
         sub_folder_path = self.photo_dir_path + sub_folder_name + "/"
         Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
 
-        file_name = time.strftime("%Y-%m-%d-%H-%M-%S.%f", current_time)[:-3] + ".jpeg"
+        file_name = current_time.strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3] + ".jpeg"
         file_path = sub_folder_path + file_name
 
         self.capture(file_path)
