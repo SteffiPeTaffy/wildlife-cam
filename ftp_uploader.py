@@ -30,5 +30,10 @@ class Uploader:
                             except Exception as e:
                                 logger.info("wildlife-cam: Failed to uploaded file")
                                 logger.exception(e)
+                            try:
+                                srv.get(file_name)
+                                logger.info("wildlife-cam: Successfully uploaded file")
+                            except FileNotFoundError:
+                                logger.error("wildlife-cam: Failed to uploaded file")
 
         srv.close()
