@@ -44,7 +44,6 @@ if config.has_section('Telegram'):
     telegram = Telegram(config['Telegram'])
     telegram.add_command_handler("snap", camera.snap_photo)
     telegram.start_polling()
-    telegram.idle()
 
     telegram_queue = Queue()
     camera.add_snap_handler(telegram_queue.put_nowait)

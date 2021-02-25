@@ -1,4 +1,5 @@
 from telegram.ext import Updater, CommandHandler, Filters
+from logzero import logger
 
 
 class Telegram(Updater):
@@ -10,8 +11,9 @@ class Telegram(Updater):
     def add_command_handler(self, command, handle_command_func):
         self.dispatcher.add_handler(
             CommandHandler(command, lambda update, context: handle_command_func(),
-                           filters=Filters.chat(id=self.allowed_chat_id)))
+                           filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
     def send_photo(self, photo_file_path):
+        logger.info("wildlife-cam: Sending photo %s to Telegram chat %s ", photo_file_path, self.allowed_chat_id)
         with open(photo_file_path, 'rb') as photo:
             self.bot.send_photo(chat_id=self.allowed_chat_id, photo=photo)

@@ -1,8 +1,6 @@
 import pysftp
 import os
-from multiprocessing import Queue
-
-from queue_worker import Worker
+from logzero import logger
 
 
 class Uploader:
@@ -14,6 +12,8 @@ class Uploader:
         self.sftp_dir = config['Directory']
 
     def upload(self, file_path):
+        logger.info("wildlife-cam: Uploading photo %s to FTP Server ", file_path)
+
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
         with pysftp.Connection(host=self.sftp_host, port=self.sftp_port, username=self.sftp_username,

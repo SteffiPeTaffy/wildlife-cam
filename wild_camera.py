@@ -23,7 +23,9 @@ class Camera(PiCamera):
         logger.info("wildlife-cam: Snapped Photo %s ", file_path)
 
         for handler in self.handlers:
+            logger.info("wildlife-cam: Calling handler %s with %s", handler, file_path)
             handler(file_path)
 
     def add_snap_handler(self, handler):
+        logger.info("wildlife-cam: Registered new handler %s ", handler)
         self.handlers.append(handler)
