@@ -2,7 +2,6 @@
 
 import time
 import configparser
-import RPi.GPIO as GPIO
 from logzero import logger, logfile
 from queue_worker import Worker
 from telegram_updater import Telegram
@@ -13,13 +12,14 @@ from gpiozero import MotionSensor
 import RPi.GPIO as GPIO
 
 
-def motion_detected(pir_sensor):
-    logger.info("wildlife-cam: Motion detected on %s", pir_sensor)
+def motion_detected(pir):
+    logger.info("wildlife-cam: Motion detected")
+    camera.snap_photo()
     count = 0
-    while count < 4:
+    while pir.motion_detected and count < 4:
+        time.sleep(0.2)
         camera.snap_photo()
         count += 1
-        time.sleep(0.2)
 
 
 # Load Config File
@@ -60,14 +60,15 @@ if config.has_section('Telegram'):
 
 # Setup PIR sensor
 pir_sensor_pin = int(config['PirSensor']['Pin'])
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(pir_sensor_pin, GPIO.IN)
-GPIO.add_event_detect(pir_sensor_pin, GPIO.RISING, motion_detected)
-time.sleep(2)
+pir_sensor = MotionSensor(pir_sensor_pin)
+
 try:
+    pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
     while True:
-        time.sleep(100)
+        pir_sensor.wait_for_motion()
+        motion_detected(pir_sensor)
+        pir_sensor.wait_for_no_motion(5)
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
