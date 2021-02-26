@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import pysftp
 import os
 from logzero import logger
@@ -23,11 +25,11 @@ class Uploader:
             _, sub_folder_name = os.path.split(base_path)
 
             try:
-                srv.cd(self.sftp_dir)
-                if not srv.exists(sub_folder_name):
-                    srv.mkdir(sub_folder_name)
-                srv.cd(sub_folder_name)
-                srv.put(file_path, file_name)
+                with srv.cd(self.sftp_dir):
+                    if not srv.exists(sub_folder_name):
+                        srv.mkdir(sub_folder_name)
+                    with srv.cd(sub_folder_name):
+                        srv.put(file_path)
             except Exception as e:
                 logger.info("wildlife-cam: Failed to uploaded file")
                 logger.exception(e)
