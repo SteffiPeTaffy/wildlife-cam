@@ -9,7 +9,6 @@ from ftp_uploader import Uploader
 from multiprocessing import Queue
 from wild_camera import Camera
 from gpiozero import MotionSensor
-import RPi.GPIO as GPIO
 
 
 def motion_detected(pir):
@@ -72,4 +71,3 @@ try:
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()
-    GPIO.cleanup()
