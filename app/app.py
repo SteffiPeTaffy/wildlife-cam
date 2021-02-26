@@ -47,15 +47,15 @@ if config.has_section('Telegram'):
     telegram_worker.start()
 
 # Setup FTP Upload if wanted
-# if config.has_section('SFTP'):
-#     logger.info("wildlife-cam: Setting up FTP Upload")
-#     ftp_uploader = Uploader(config['SFTP'])
-#
-#     ftp_queue = Queue()
-#     camera.add_snap_handler(ftp_queue.put_nowait)
-#
-#     ftp_worker = Worker(ftp_queue, ftp_uploader.upload)
-#     ftp_worker.start()
+if config.has_section('SFTP'):
+    logger.info("wildlife-cam: Setting up FTP Upload")
+    ftp_uploader = Uploader(config['SFTP'])
+
+    ftp_queue = Queue()
+    camera.add_snap_handler(ftp_queue.put_nowait)
+
+    ftp_worker = Worker(ftp_queue, ftp_uploader.upload)
+    ftp_worker.start()
 
 # Setup PIR sensor
 pir_sensor_pin = int(config['PirSensor']['Pin'])
