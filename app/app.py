@@ -65,17 +65,17 @@ try:
     while True:
         pir_sensor.wait_for_motion()
         logger.info("wildlife-cam: Motion detected")
-        camera.start_video()
+        # camera.start_video()
         camera.start_series()
         count = 0
-        while pir_sensor.motion_detected and count < 10:
+        while pir_sensor.motion_detected and count < 4:
             time.sleep(0.2)
             camera.snap_series()
             count += 1
 
         camera.stop_series()
         pir_sensor.wait_for_no_motion(5)
-        camera.stop_video()
+        # camera.stop_video()
 
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
