@@ -16,7 +16,7 @@ class Camera(PiCamera):
         self.resolution = (1024, 768)
 
     def snap_photo(self):
-        file_path = self.__get_file_path()
+        file_path = self.__get_file_path('.jpeg')
 
         self.capture(file_path)
         logger.info("wildlife-cam: Snapped a Photo %s", file_path)
