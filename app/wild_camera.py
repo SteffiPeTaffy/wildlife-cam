@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime
 from logzero import logger
 
-from app.queue_worker import QueueItem
+from queue_worker import QueueItem
 
 
 class Camera(PiCamera):

@@ -2,8 +2,7 @@ from telegram.ext import Updater, CommandHandler, Filters
 from telegram import InputMediaPhoto
 from logzero import logger
 import logging
-
-from app.queue_worker import QueueItem, MediaType
+from queue_worker import QueueItem, MediaType
 
 logging.basicConfig(level=logging.ERROR,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

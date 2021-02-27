@@ -4,7 +4,7 @@ import pysftp
 import os
 from logzero import logger
 
-from app.queue_worker import QueueItem
+from queue_worker import QueueItem
 
 
 class Uploader:
