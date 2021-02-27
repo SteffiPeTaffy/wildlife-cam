@@ -52,7 +52,7 @@ class Camera(PiCamera):
             handler(item)
 
     def start_video(self):
-        file_path = self.__get_file_path('.h264')
+        file_path = self.__get_file_path('.mjpeg')
         self.start_recording(file_path)
         self.current_video = file_path
 
