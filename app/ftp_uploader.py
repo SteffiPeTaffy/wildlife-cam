@@ -6,12 +6,12 @@ from logzero import logger
 
 
 class Uploader:
-    def __init__(self, config):
-        self.sftp_host = config['IpAddress']
-        self.sftp_port = int(config['Port'])
-        self.sftp_username = config['Username']
-        self.sftp_password = config['Password']
-        self.sftp_dir = config['Directory']
+    def __init__(self, sftp_host, sftp_port, sftp_username, sftp_password, sftp_dir):
+        self.sftp_host = sftp_host
+        self.sftp_port = sftp_port
+        self.sftp_username = sftp_username
+        self.sftp_password = sftp_password
+        self.sftp_dir = sftp_dir
 
     def upload(self, file_path):
         logger.info("wildlife-cam: Uploading photo to FTP Server")

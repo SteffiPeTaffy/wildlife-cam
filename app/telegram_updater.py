@@ -7,9 +7,9 @@ logging.basicConfig(level=logging.ERROR,
 
 
 class Telegram(Updater):
-    def __init__(self, config):
-        self.api_token = config['ApiKey']
-        self.allowed_chat_id = int(config['ChatId'])
+    def __init__(self, api_token, allowed_chat_id):
+        self.api_token = api_token
+        self.allowed_chat_id = allowed_chat_id
         super().__init__(self.api_token)
 
     def add_command_handler(self, command, handle_command_func):

@@ -1,8 +1,9 @@
 #!/usr/bin/python3
 
 import time
-import configparser
 from logzero import logger, logfile
+
+from wild_config import WildlifeCamConfig
 from queue_worker import Worker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
@@ -21,22 +22,23 @@ def motion_detected(pir):
         count += 1
 
 
-# Load Config File
 logger.info("wildlife-cam: Starting")
 
-# get config file
-config = configparser.ConfigParser()
-config.read("/home/pi/WildlifeCam/WildlifeCam.ini")
+# Load Config File
+config = WildlifeCamConfig('/home/pi/WildlifeCam/WildlifeCam.ini')
 
 # Setup Camera
-camera = Camera(config['General'])
-camera.resolution = (1024, 768)
+photo_dir_path = config.get('General', 'PhotoDirPath')
+camera = Camera(photo_dir_path)
 time.sleep(2)
 
 # Setup Telegram if wanted
 if config.has_section('Telegram'):
     logger.info("wildlife-cam: Setting up Telegram")
-    telegram = Telegram(config['Telegram'])
+    api_token = config.get('Telegram', 'ApiKey')
+    allowed_chat_id = config.getint('Telegram', 'ChatId')
+
+    telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", camera.snap_photo)
     telegram.start_polling()
 
@@ -49,7 +51,13 @@ if config.has_section('Telegram'):
 # Setup FTP Upload if wanted
 if config.has_section('SFTP'):
     logger.info("wildlife-cam: Setting up FTP Upload")
-    ftp_uploader = Uploader(config['SFTP'])
+    sftp_host = config.get('SFTP', 'IpAddress')
+    sftp_port = config.getint('SFTP', 'Port')
+    sftp_username = config.get('SFTP', 'Username')
+    sftp_password = config.get('SFTP', 'Password')
+    sftp_dir = config.get('SFTP', 'Directory')
+
+    ftp_uploader = Uploader(sftp_host, sftp_port, sftp_username, sftp_password, sftp_dir)
 
     ftp_queue = Queue()
     camera.add_snap_handler(ftp_queue.put_nowait)
@@ -58,7 +66,7 @@ if config.has_section('SFTP'):
     ftp_worker.start()
 
 # Setup PIR sensor
-pir_sensor_pin = int(config['PirSensor']['Pin'])
+pir_sensor_pin = config.getint('PirSensor', 'Pin')
 pir_sensor = MotionSensor(pir_sensor_pin)
 
 try:

@@ -5,10 +5,11 @@ from logzero import logger
 
 
 class Camera(PiCamera):
-    def __init__(self, camera_config, *args, **kwargs):
-        self.photo_dir_path = camera_config['PhotoDirPath']
-        self.handlers = []
+    def __init__(self, photo_dir_path, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.photo_dir_path = photo_dir_path
+        self.handlers = []
+        self.resolution = (1024, 768)
 
     def snap_photo(self):
         current_time = datetime.utcnow()
