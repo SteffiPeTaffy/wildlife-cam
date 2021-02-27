@@ -12,16 +12,6 @@ from wild_camera import Camera
 from gpiozero import MotionSensor
 
 
-def motion_detected(pir):
-    logger.info("wildlife-cam: Motion detected")
-    camera.snap_photo()
-    count = 0
-    while pir.motion_detected and count < 4:
-        time.sleep(0.2)
-        camera.snap_photo()
-        count += 1
-
-
 logger.info("wildlife-cam: Starting")
 
 # Load Config File
@@ -43,9 +33,9 @@ if config.has_section('Telegram'):
     telegram.start_polling()
 
     telegram_queue = Queue()
-    camera.add_snap_handler(telegram_queue.put_nowait)
+    camera.add_camera_handler(telegram_queue.put_nowait)
 
-    telegram_worker = Worker(telegram_queue, telegram.send_photo)
+    telegram_worker = Worker(telegram_queue, telegram.send_message)
     telegram_worker.start()
 
 # Setup FTP Upload if wanted
@@ -60,7 +50,7 @@ if config.has_section('SFTP'):
     ftp_uploader = Uploader(sftp_host, sftp_port, sftp_username, sftp_password, sftp_dir)
 
     ftp_queue = Queue()
-    camera.add_snap_handler(ftp_queue.put_nowait)
+    camera.add_camera_handler(ftp_queue.put_nowait)
 
     ftp_worker = Worker(ftp_queue, ftp_uploader.upload)
     ftp_worker.start()
@@ -74,8 +64,19 @@ try:
     logger.info("wildlife-cam: Ready and waiting for motion")
     while True:
         pir_sensor.wait_for_motion()
-        motion_detected(pir_sensor)
+        logger.info("wildlife-cam: Motion detected")
+        camera.start_video()
+        camera.start_series()
+        count = 0
+        while pir_sensor.motion_detected and count < 10:
+            time.sleep(0.2)
+            camera.snap_series()
+            count += 1
+
+        camera.stop_series()
         pir_sensor.wait_for_no_motion(5)
+        camera.stop_video()
+
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()

@@ -1,6 +1,23 @@
 import time
 from multiprocessing import Process
 from logzero import logger
+from typing import List
+from enum import Enum, auto
+
+
+class MediaType(Enum):
+    PHOTO = auto()
+    VIDEO = auto()
+    SERIES = auto()
+
+
+class QueueItem:
+    type: MediaType
+    media: List[str]
+
+    def __init__(self, media_type, media):
+        self.type = media_type
+        self.media = media
 
 
 class Worker(Process):
