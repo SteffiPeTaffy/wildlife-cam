@@ -3,7 +3,7 @@ from pathlib import Path
 from datetime import datetime
 from logzero import logger
 
-from queue_worker import QueueItem
+from queue_worker import QueueItem, MediaType
 
 
 class Camera(PiCamera):
@@ -21,7 +21,7 @@ class Camera(PiCamera):
         self.capture(file_path)
         logger.info("wildlife-cam: Snapped a Photo %s", file_path)
 
-        item = QueueItem('photo', [file_path])
+        item = QueueItem(MediaType.PHOTO, [file_path])
         for handler in self.handlers:
             handler(item)
 
@@ -47,7 +47,7 @@ class Camera(PiCamera):
         self.current_series.append(file_path)
 
     def stop_series(self):
-        item = QueueItem('series', self.current_series)
+        item = QueueItem(MediaType.SERIES, self.current_series)
         for handler in self.handlers:
             handler(item)
 
@@ -57,6 +57,6 @@ class Camera(PiCamera):
         self.current_video = file_path
 
     def stop_video(self):
-        item = QueueItem('video', [self.current_video])
+        item = QueueItem(MediaType.VIDEO, [self.current_video])
         for handler in self.handlers:
             handler(item)
