@@ -19,7 +19,7 @@ class Telegram(Updater):
             CommandHandler(command, lambda update, context: handle_command_func(),
                            filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
-    def send_message(self, queue_item: QueueItem):
+    def send_media_message(self, queue_item: QueueItem):
         logger.info("wildlife-cam: Sending message to Telegram chat %s ", self.allowed_chat_id)
 
         if queue_item.type == MediaType.PHOTO:
@@ -37,4 +37,4 @@ class Telegram(Updater):
                 with open(file_path, 'rb') as photo:
                     media_group.append(InputMediaPhoto(media=photo))
 
-            self.bot.send_media_group(chat_id=self.allowed_chat_id, media=media_group)
+            self.bot.send_message(chat_id=self.allowed_chat_id, media=media_group)

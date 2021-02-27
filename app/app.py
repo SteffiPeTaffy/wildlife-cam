@@ -35,7 +35,7 @@ if config.has_section('Telegram'):
     telegram_queue = Queue()
     camera.add_camera_handler(telegram_queue.put_nowait)
 
-    telegram_worker = Worker(telegram_queue, telegram.send_message)
+    telegram_worker = Worker(telegram_queue, telegram.send_media_message)
     telegram_worker.start()
 
 # Setup FTP Upload if wanted
