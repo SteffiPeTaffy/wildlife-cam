@@ -24,11 +24,11 @@ class Telegram(Updater):
 
         if queue_item.type == MediaType.PHOTO:
             with open(queue_item.media[0], 'rb') as photo:
-                self.bot.send_message(chat_id=self.allowed_chat_id, photo=photo)
+                self.bot.send_photo(chat_id=self.allowed_chat_id, photo=photo)
 
         if queue_item.type == MediaType.VIDEO:
             with open(queue_item.media[0], 'rb') as photo:
-                self.bot.send_message(chat_id=self.allowed_chat_id, video=photo)
+                self.bot.send_video(chat_id=self.allowed_chat_id, video=photo, supports_streaming=True)
 
         if queue_item.type == MediaType.SERIES:
             media_group = list()
@@ -37,4 +37,4 @@ class Telegram(Updater):
                 with open(file_path, 'rb') as photo:
                     media_group.append(InputMediaPhoto(media=photo))
 
-            self.bot.send_message(chat_id=self.allowed_chat_id, media=media_group)
+            self.bot.send_media_group(chat_id=self.allowed_chat_id, media=media_group)
