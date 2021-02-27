@@ -1,4 +1,5 @@
-from telegram.ext import Updater, CommandHandler, Filters, InputMediaPhoto
+from telegram.ext import Updater, CommandHandler, Filters
+from telegram import InputMediaPhoto
 from logzero import logger
 import logging
 
