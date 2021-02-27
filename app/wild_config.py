@@ -32,10 +32,10 @@ class WildlifeCamConfig(ConfigParser):
                 'Missing required option "LogDirPath" in "General" section in config file')
 
         if self.has_section('Telegram'):
-            if not self.has_option('telegram', 'ApiKey'):
+            if not self.has_option('Telegram', 'ApiKey'):
                 raise ConfigValidationException(
                     'Missing required option "ApiKey" in "Telegram" section in config file')
-            if not self.has_option('telegram', 'ChatId'):
+            if not self.has_option('Telegram', 'ChatId'):
                 raise ConfigValidationException(
                     'Missing required option "ChatId" in "Telegram" section in config file')
 
