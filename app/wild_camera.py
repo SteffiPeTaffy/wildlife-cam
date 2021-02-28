@@ -59,8 +59,6 @@ class Camera(PiCamera):
         if self.recording:
             self.stop_recording()
             file_path = args[0]
-            # self.__call_handlers(QueueItem(MediaType.VIDEO, [file_path]))
-
             file_path_no_ending, _ = os.path.splitext(file_path)
             mp4_file_path = file_path_no_ending + '.mp4'
             command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
