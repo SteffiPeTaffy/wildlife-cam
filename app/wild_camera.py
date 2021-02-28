@@ -69,7 +69,7 @@ class Camera(PiCamera):
             except subprocess.CalledProcessError:
                 logger.info("wildlife-cam: Failed to convert video clip to mp4")
 
-    def start_clip(self, seconds):
+    def start_clip(self, seconds=5):
         if not self.recording:
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
