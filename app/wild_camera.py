@@ -1,3 +1,6 @@
+import os
+import subprocess
+
 from picamera import PiCamera, PiCameraRuntimeError
 from pathlib import Path
 from datetime import datetime
@@ -56,17 +59,17 @@ class Camera(PiCamera):
         if self.recording:
             self.stop_recording()
             file_path = args[0]
-            self.__call_handlers(QueueItem(MediaType.VIDEO, [file_path]))
+            # self.__call_handlers(QueueItem(MediaType.VIDEO, [file_path]))
 
-            # file_path_no_ending, _ = os.path.splitext(file_path)
-            # mp4_file_path = file_path_no_ending + '.mp4'
-            # command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
-            # try:
-            #     subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-            #     logger.info("wildlife-cam: Recorded a video clip")
-            #     self.__call_handlers(QueueItem(MediaType.VIDEO, [mp4_file_path]))
-            # except subprocess.CalledProcessError:
-            #     logger.info("wildlife-cam: Failed to convert video clip to mp4")
+            file_path_no_ending, _ = os.path.splitext(file_path)
+            mp4_file_path = file_path_no_ending + '.mp4'
+            command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
+            try:
+                subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+                logger.info("wildlife-cam: Recorded a video clip")
+                self.__call_handlers(QueueItem(MediaType.VIDEO, [mp4_file_path]))
+            except subprocess.CalledProcessError:
+                logger.info("wildlife-cam: Failed to convert video clip to mp4")
 
     def start_clip(self, seconds):
         if not self.recording:
