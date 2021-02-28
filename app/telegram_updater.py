@@ -26,9 +26,9 @@ class Telegram(Updater):
             with open(queue_item.media[0], 'rb') as photo:
                 self.bot.send_photo(chat_id=self.allowed_chat_id, photo=photo)
 
-        if queue_item.type == MediaType.VIDEO:
-            with open(queue_item.media[0], 'rb') as video:
-                self.bot.send_video(chat_id=self.allowed_chat_id, video=video, supports_streaming=True, timeout=60)
+        # if queue_item.type == MediaType.VIDEO:
+        #     with open(queue_item.media[0], 'rb') as video:
+        #         self.bot.send_video(chat_id=self.allowed_chat_id, video=video, supports_streaming=True, timeout=60)
 
         if queue_item.type == MediaType.SERIES:
             media_group = list()
