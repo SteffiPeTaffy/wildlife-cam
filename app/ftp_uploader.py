@@ -16,7 +16,7 @@ class Uploader:
         self.sftp_dir = sftp_dir
 
     def upload(self, queue_item: QueueItem):
-        logger.info("wildlife-cam: Uploading photo to FTP Server")
+        logger.info("wildlife-cam: Uploading media file to FTP Server")
 
         cnopts = pysftp.CnOpts()
         cnopts.hostkeys = None
@@ -38,5 +38,5 @@ class Uploader:
                 with srv.cd(sub_folder_name):
                     srv.put(file_path)
         except Exception as e:
-            logger.info("wildlife-cam: Failed to uploaded file")
+            logger.info("wildlife-cam: Failed to uploaded media file")
             logger.exception(e)

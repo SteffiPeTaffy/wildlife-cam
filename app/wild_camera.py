@@ -14,15 +14,13 @@ class Camera(PiCamera):
         super().__init__(*args, **kwargs)
         self.photo_dir_path = photo_dir_path
         self.handlers = []
-        self.current_video = None
-        self.resolution = (1024, 768)
+        self.current_video_file_path = None
+        self.resolution = (1280, 720)
 
     def capture_photo(self):
-        file_path = self.__get_file_path('.jpeg')
+        file_path = self.__capture_photo()
 
-        self.capture(file_path)
-        logger.info("wildlife-cam: Snapped a Photo %s", file_path)
-
+        logger.info("wildlife-cam: Snapped a photo")
         self.__call_handlers(QueueItem(MediaType.PHOTO, [file_path]))
 
     def __get_file_path(self, file_ending):
@@ -42,27 +40,38 @@ class Camera(PiCamera):
     def add_camera_handler(self, handler):
         self.handlers.append(handler)
 
+    def __capture_photo(self):
+        file_path = self.__get_file_path('.jpeg')
+        self.capture(file_path, use_video_port=self.__is_recording())
+        return file_path
+
     def capture_series(self, size):
         series = []
         for i in range(size):
-            file_path = self.__get_file_path('.jpeg')
-            self.capture(file_path)
+            file_path = self.__capture_photo()
             series.append(file_path)
 
+        logger.info("wildlife-cam: Snapped a Series of photos")
         self.__call_handlers(QueueItem(MediaType.SERIES, series))
 
+    def __is_recording(self):
+        if not self.current_video_file_path:
+            return False
+        return True
+
     def stop_clip(self):
-        try:
-            self._check_recording_stopped()
-        except PiCameraRuntimeError:
+        if self.__is_recording():
+            video_file_path = self.current_video_file_path
             self.stop_recording()
-            self.__call_handlers(QueueItem(MediaType.VIDEO, [self.current_video]))
-            self.current_video = None
+            self.current_video_file_path = None
+
+            logger.info("wildlife-cam: Recorded a video clip")
+            self.__call_handlers(QueueItem(MediaType.VIDEO, [video_file_path]))
 
     def start_clip(self, seconds):
-        if not self.started_recording:
-            file_path = self.__get_file_path('.mjpeg')
-            self.start_recording(file_path)
-            self.current_video = file_path
+        if not self.__is_recording():
+            video_file_path = self.__get_file_path('.mjpeg')
+            self.current_video_file_path = video_file_path
+            self.start_recording(video_file_path)
             t = Timer(seconds, self.stop_clip)
             t.start()
