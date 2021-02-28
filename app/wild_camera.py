@@ -51,7 +51,14 @@ class Camera(PiCamera):
 
         self.__call_handlers(QueueItem(MediaType.SERIES, series))
 
-    def record_clip(self, seconds):
+    def stop_clip(self):
+        if self.started_recording:
+            self.stop_recording()
+            self.__call_handlers(QueueItem(MediaType.VIDEO, [self.current_video]))
+            self.current_video = None
+            self.started_recording = None
+
+    def start_clip(self, seconds):
         if self.started_recording:
             if self.started_recording + seconds < time.time():
                 self.stop_recording()
