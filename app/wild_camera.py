@@ -14,7 +14,6 @@ class Camera(PiCamera):
         super().__init__(*args, **kwargs)
         self.photo_dir_path = photo_dir_path
         self.handlers = []
-        self.current_video_file_path = None
         self.resolution = (1280, 720)
 
     def capture_photo(self):
@@ -42,7 +41,7 @@ class Camera(PiCamera):
 
     def __capture_photo(self):
         file_path = self.__get_file_path('.jpeg')
-        self.capture(file_path, use_video_port=self.__is_recording())
+        self.capture(file_path, use_video_port=self.recording)
         return file_path
 
     def capture_series(self, size):
@@ -54,24 +53,17 @@ class Camera(PiCamera):
         logger.info("wildlife-cam: Snapped a Series of photos")
         self.__call_handlers(QueueItem(MediaType.SERIES, series))
 
-    def __is_recording(self):
-        if not self.current_video_file_path:
-            return False
-        return True
-
-    def stop_clip(self):
-        if self.__is_recording():
-            video_file_path = self.current_video_file_path
+    def stop_clip(self, *args, **kwargs):
+        if self.recording:
             self.stop_recording()
-            self.current_video_file_path = None
 
             logger.info("wildlife-cam: Recorded a video clip")
-            self.__call_handlers(QueueItem(MediaType.VIDEO, [video_file_path]))
+            self.__call_handlers(QueueItem(MediaType.VIDEO, args))
 
     def start_clip(self, seconds):
-        if not self.__is_recording():
+        if not self.recording:
             video_file_path = self.__get_file_path('.mjpeg')
-            self.current_video_file_path = video_file_path
             self.start_recording(video_file_path)
-            t = Timer(seconds, self.stop_clip)
+            logger.info("wildlife-cam: Started recording a video clip")
+            t = Timer(seconds, self.stop_clip, [video_file_path, ])
             t.start()
