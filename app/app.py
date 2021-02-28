@@ -63,10 +63,10 @@ try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
     while True:
-        # camera.stop_clip()
+        camera.stop_clip()
         pir_sensor.wait_for_motion()
         logger.info("wildlife-cam: Motion detected")
-        # camera.start_clip(5)
+        camera.start_clip(5)
         camera.capture_series(3)
         pir_sensor.wait_for_no_motion(1)
 
