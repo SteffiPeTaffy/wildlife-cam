@@ -30,6 +30,7 @@ if config.has_section('Telegram'):
 
     telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", camera.capture_photo)
+    telegram.add_command_handler("clip", camera.start_clip)
     telegram.start_polling()
 
     telegram_queue = Queue()
