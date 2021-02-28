@@ -5,6 +5,8 @@ from pathlib import Path
 from datetime import datetime
 from logzero import logger
 from threading import Timer
+import subprocess
+import os
 
 from queue_worker import QueueItem, MediaType
 
@@ -56,13 +58,21 @@ class Camera(PiCamera):
     def stop_clip(self, *args, **kwargs):
         if self.recording:
             self.stop_recording()
+            file_path = args[0]
+            file_path_no_ending, _ = os.path.splitext(file_path)
+            mp4_file_path = file_path_no_ending + '.mp4'
+            command = "MP4Box -add {} {}.mp4".format(file_path, mp4_file_path)
+            try:
+                subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+            except subprocess.CalledProcessError:
+                logger.info("wildlife-cam: Failed to convert video clip to mp4")
 
             logger.info("wildlife-cam: Recorded a video clip")
-            self.__call_handlers(QueueItem(MediaType.VIDEO, args))
+            self.__call_handlers(QueueItem(MediaType.VIDEO, [mp4_file_path]))
 
     def start_clip(self, seconds):
         if not self.recording:
-            video_file_path = self.__get_file_path('.mjpeg')
+            video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path)
             logger.info("wildlife-cam: Started recording a video clip")
             t = Timer(seconds, self.stop_clip, [video_file_path, ])

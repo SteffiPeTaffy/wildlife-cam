@@ -28,7 +28,7 @@ class Worker(Process):
 
     def run(self):
         while True:
-            time.sleep(1)
+            time.sleep(1.5)
             if not self.queue.empty():
                 queue_item = self.queue.get(timeout=3)
                 try:
