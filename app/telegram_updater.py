@@ -4,8 +4,7 @@ from logzero import logger
 import logging
 from queue_worker import QueueItem, MediaType
 
-logging.basicConfig(level=logging.ERROR,
-                    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 
 
 class Telegram(Updater):
@@ -26,9 +25,9 @@ class Telegram(Updater):
             with open(queue_item.media[0], 'rb') as photo:
                 self.bot.send_photo(chat_id=self.allowed_chat_id, photo=photo)
 
-        # if queue_item.type == MediaType.VIDEO:
-        #     with open(queue_item.media[0], 'rb') as video:
-        #         self.bot.send_video(chat_id=self.allowed_chat_id, video=video, supports_streaming=True, timeout=60)
+        if queue_item.type == MediaType.VIDEO:
+            with open(queue_item.media[0], 'rb') as video:
+                self.bot.send_video(chat_id=self.allowed_chat_id, video=video, supports_streaming=True, timeout=5000)
 
         if queue_item.type == MediaType.SERIES:
             media_group = list()
@@ -37,4 +36,4 @@ class Telegram(Updater):
                 with open(file_path, 'rb') as photo:
                     media_group.append(InputMediaPhoto(media=photo))
 
-            self.bot.send_media_group(chat_id=self.allowed_chat_id, media=media_group, timeout=30)
+            self.bot.send_media_group(chat_id=self.allowed_chat_id, media=media_group, timeout=1000)

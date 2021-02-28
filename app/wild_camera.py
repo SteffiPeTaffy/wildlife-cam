@@ -1,12 +1,8 @@
-import time
-
 from picamera import PiCamera, PiCameraRuntimeError
 from pathlib import Path
 from datetime import datetime
 from logzero import logger
 from threading import Timer
-import subprocess
-import os
 
 from queue_worker import QueueItem, MediaType
 
@@ -17,6 +13,7 @@ class Camera(PiCamera):
         self.photo_dir_path = photo_dir_path
         self.handlers = []
         self.resolution = (1280, 720)
+        self.framerate = 24
 
     def capture_photo(self):
         file_path = self.__capture_photo()
@@ -43,7 +40,7 @@ class Camera(PiCamera):
 
     def __capture_photo(self):
         file_path = self.__get_file_path('.jpeg')
-        self.capture(file_path, use_video_port=self.recording)
+        self.capture(file_path, use_video_port=self.recording, resize=(1280, 720))
         return file_path
 
     def capture_series(self, size):
@@ -59,20 +56,22 @@ class Camera(PiCamera):
         if self.recording:
             self.stop_recording()
             file_path = args[0]
-            file_path_no_ending, _ = os.path.splitext(file_path)
-            mp4_file_path = file_path_no_ending + '.mp4'
-            command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
-            try:
-                subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-                logger.info("wildlife-cam: Recorded a video clip")
-                self.__call_handlers(QueueItem(MediaType.VIDEO, [mp4_file_path]))
-            except subprocess.CalledProcessError:
-                logger.info("wildlife-cam: Failed to convert video clip to mp4")
+            self.__call_handlers(QueueItem(MediaType.VIDEO, [file_path]))
+
+            # file_path_no_ending, _ = os.path.splitext(file_path)
+            # mp4_file_path = file_path_no_ending + '.mp4'
+            # command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
+            # try:
+            #     subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
+            #     logger.info("wildlife-cam: Recorded a video clip")
+            #     self.__call_handlers(QueueItem(MediaType.VIDEO, [mp4_file_path]))
+            # except subprocess.CalledProcessError:
+            #     logger.info("wildlife-cam: Failed to convert video clip to mp4")
 
     def start_clip(self, seconds):
         if not self.recording:
             video_file_path = self.__get_file_path('.h264')
-            self.start_recording(video_file_path)
+            self.start_recording(video_file_path, resize=(480, 320))
             logger.info("wildlife-cam: Started recording a video clip")
             t = Timer(seconds, self.stop_clip, [video_file_path, ])
             t.start()
