@@ -55,10 +55,9 @@ class Camera(PiCamera):
         logger.info("wildlife-cam: Snapped a Series of photos")
         self.__call_handlers(QueueItem(MediaType.SERIES, series))
 
-    def stop_clip(self, *args, **kwargs):
-        if self.recording:
+    def stop_clip(self, file_path):
+        if self.recording and file_path:
             self.stop_recording()
-            file_path = args[0]
             file_path_no_ending, _ = os.path.splitext(file_path)
             mp4_file_path = file_path_no_ending + '.mp4'
             command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
@@ -74,5 +73,5 @@ class Camera(PiCamera):
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
             logger.info("wildlife-cam: Started recording a video clip")
-            t = Timer(seconds, self.stop_clip, [video_file_path, ])
+            t = Timer(seconds, self.stop_clip, kwargs=({'file_path': video_file_path}))
             t.start()
