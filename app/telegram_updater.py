@@ -34,8 +34,11 @@ class Telegram(Updater):
         if queue_item.type == MediaType.SERIES:
             media_group = list()
 
-            for file_path in queue_item.media:
+            for index, file_path in enumerate(queue_item.media):
                 with open(file_path, 'rb') as photo:
-                    media_group.append(InputMediaPhoto(media=photo, caption=queue_item.caption))
+                    if index == 0:
+                        media_group.append(InputMediaPhoto(media=photo, caption=queue_item.caption))
+                    else:
+                        media_group.append(InputMediaPhoto(media=photo))
 
             self.bot.send_media_group(chat_id=self.allowed_chat_id, media=media_group, timeout=1000)
