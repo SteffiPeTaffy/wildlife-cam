@@ -14,9 +14,9 @@ class Telegram(Updater):
         self.allowed_chat_id = allowed_chat_id
         super().__init__(self.api_token)
 
-    def add_command_handler(self, command, handle_command_func, *args, **kwargs):
+    def add_command_handler(self, command, handle_command_func, **kwargs):
         self.dispatcher.add_handler(
-            CommandHandler(command, lambda update, context: handle_command_func(*args, **kwargs),
+            CommandHandler(command, lambda update, context: handle_command_func(kwargs),
                            filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
     def send_media_message(self, queue_item: QueueItem):
