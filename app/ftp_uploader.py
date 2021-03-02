@@ -4,7 +4,7 @@ import pysftp
 import os
 from logzero import logger
 
-from queue_worker import QueueItem
+from queue_worker import MediaItem
 
 
 class Uploader:
@@ -15,7 +15,7 @@ class Uploader:
         self.sftp_password = sftp_password
         self.sftp_dir = sftp_dir
 
-    def upload(self, queue_item: QueueItem):
+    def upload(self, queue_item: MediaItem):
         logger.info("wildlife-cam: Uploading media file to FTP Server")
 
         cnopts = pysftp.CnOpts()

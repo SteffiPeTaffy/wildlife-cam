@@ -14,7 +14,7 @@ class MediaType(Enum):
     SERIES = auto()
 
 
-class QueueItem:
+class MediaItem:
     type: MediaType
     media: List[str]
 
@@ -36,7 +36,7 @@ def convert_video(queue_item):
         logger.info("wildlife-cam: Failed to convert video clip to mp4")
 
 
-class Worker(Process):
+class MediaWorker(Process):
     def __init__(self, queue, queue_function, *args, **kwargs):
         self.queue = queue
         self.queue_function = queue_function

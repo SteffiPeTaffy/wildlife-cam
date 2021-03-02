@@ -3,7 +3,7 @@ from telegram import InputMediaPhoto
 from logzero import logger
 import logging
 
-from queue_worker import QueueItem, MediaType
+from queue_worker import MediaItem, MediaType
 
 logging.basicConfig(level=logging.INFO)
 
@@ -19,7 +19,7 @@ class Telegram(Updater):
             CommandHandler(command, lambda update, context: handle_command_func(),
                            filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
-    def send_media_message(self, queue_item: QueueItem):
+    def send_media_message(self, queue_item: MediaItem):
         logger.info("wildlife-cam: Sending message to Telegram chat %s ", self.allowed_chat_id)
 
         if queue_item.type == MediaType.PHOTO:

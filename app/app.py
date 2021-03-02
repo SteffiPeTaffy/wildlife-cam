@@ -4,7 +4,7 @@ import time
 from logzero import logger, logfile
 
 from wild_config import WildlifeCamConfig
-from queue_worker import Worker
+from queue_worker import MediaWorker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
 from multiprocessing import Queue
@@ -36,7 +36,7 @@ if config.has_section('Telegram'):
     telegram_queue = Queue()
     camera.add_camera_handler(telegram_queue.put_nowait)
 
-    telegram_worker = Worker(telegram_queue, telegram.send_media_message)
+    telegram_worker = MediaWorker(telegram_queue, telegram.send_media_message)
     telegram_worker.start()
 
 # Setup FTP Upload if wanted
@@ -53,7 +53,7 @@ if config.has_section('SFTP'):
     ftp_queue = Queue()
     camera.add_camera_handler(ftp_queue.put_nowait)
 
-    ftp_worker = Worker(ftp_queue, ftp_uploader.upload)
+    ftp_worker = MediaWorker(ftp_queue, ftp_uploader.upload)
     ftp_worker.start()
 
 # Setup PIR sensor

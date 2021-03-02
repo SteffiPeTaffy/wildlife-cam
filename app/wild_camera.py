@@ -7,7 +7,7 @@ from datetime import datetime
 from logzero import logger
 from threading import Timer
 
-from queue_worker import QueueItem, MediaType
+from queue_worker import MediaItem, MediaType
 
 
 class Camera(PiCamera):
@@ -22,7 +22,7 @@ class Camera(PiCamera):
         file_path = self.__capture_photo()
 
         logger.info("wildlife-cam: Snapped a photo")
-        self.__call_handlers(QueueItem(media_type=MediaType.PHOTO, media=[file_path], caption=caption))
+        self.__call_handlers(MediaItem(media_type=MediaType.PHOTO, media=[file_path], caption=caption))
 
     def __get_file_path(self, file_ending):
         current_time = datetime.utcnow()
@@ -53,13 +53,13 @@ class Camera(PiCamera):
             series.append(file_path)
 
         logger.info("wildlife-cam: Snapped a Series of photos")
-        self.__call_handlers(QueueItem(media_type=MediaType.SERIES, media=series, caption=caption))
+        self.__call_handlers(MediaItem(media_type=MediaType.SERIES, media=series, caption=caption))
 
     def __stop_clip(self, file_path, caption):
         if self.recording and file_path:
             self.stop_recording()
             logger.info("wildlife-cam: Recorded a video clip")
-            self.__call_handlers(QueueItem(media_type=MediaType.VIDEO, media=[file_path], caption=caption))
+            self.__call_handlers(MediaItem(media_type=MediaType.VIDEO, media=[file_path], caption=caption))
 
     def start_clip(self, seconds=5, caption=''):
         if not self.recording:
