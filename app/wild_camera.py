@@ -58,15 +58,8 @@ class Camera(PiCamera):
     def __stop_clip(self, file_path, caption):
         if self.recording and file_path:
             self.stop_recording()
-            file_path_no_ending, _ = os.path.splitext(file_path)
-            mp4_file_path = file_path_no_ending + '.mp4'
-            command = "MP4Box -add {} {}".format(file_path, mp4_file_path)
-            try:
-                subprocess.check_output(command, stderr=subprocess.STDOUT, shell=True)
-                logger.info("wildlife-cam: Recorded a video clip")
-                self.__call_handlers(QueueItem(media_type=MediaType.VIDEO, media=[mp4_file_path], caption=caption))
-            except subprocess.CalledProcessError:
-                logger.info("wildlife-cam: Failed to convert video clip to mp4")
+            logger.info("wildlife-cam: Recorded a video clip")
+            self.__call_handlers(QueueItem(media_type=MediaType.VIDEO, media=[file_path], caption=caption))
 
     def start_clip(self, seconds=5, caption=''):
         if not self.recording:
