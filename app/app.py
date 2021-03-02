@@ -29,8 +29,8 @@ if config.has_section('Telegram'):
     allowed_chat_id = config.getint('Telegram', 'ChatId')
 
     telegram = Telegram(api_token, allowed_chat_id)
-    telegram.add_command_handler("snap", camera.capture_photo)
-    telegram.add_command_handler("clip", camera.start_clip)
+    telegram.add_command_handler("snap", camera.capture_photo, kwargs=({'caption': 'Here is your photo!'}))
+    telegram.add_command_handler("clip", camera.start_clip, kwargs=({'caption': 'Here is your video!'}))
     telegram.start_polling()
 
     telegram_queue = Queue()
@@ -63,13 +63,15 @@ pir_sensor = MotionSensor(pir_sensor_pin)
 try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
+    camera.capture_photo('Wildlife Cam is up and ready to go!')
     while True:
         pir_sensor.wait_for_motion()
         logger.info("wildlife-cam: Motion detected")
-        camera.start_clip(5)
-        camera.capture_series(3)
+        camera.start_clip(5, 'Motion detected!')
+        camera.capture_series(3, 'Motion detected!')
         pir_sensor.wait_for_no_motion(1)
 
 finally:
+    camera.capture_photo('Wildlife Cam is shutting down!')
     logger.info("wildlife-cam: Stopping Wildlife Cam")
     camera.close()

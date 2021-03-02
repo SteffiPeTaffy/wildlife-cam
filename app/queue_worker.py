@@ -18,9 +18,10 @@ class QueueItem:
     type: MediaType
     media: List[str]
 
-    def __init__(self, media_type, media):
+    def __init__(self, media_type, media, caption):
         self.type = media_type
         self.media = media
+        self.caption = caption
 
 
 class Worker(Process):
