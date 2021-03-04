@@ -18,7 +18,6 @@ def handle_motion():
         logger.info("wildlife-cam: Motion detected")
         camera.start_clip(5, 'Motion detected!')
         camera.capture_series(3, 'Motion detected!')
-        pir_sensor.wait_for_no_motion(1)
 
 
 logger.info("wildlife-cam: Starting")
