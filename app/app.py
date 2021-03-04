@@ -10,6 +10,15 @@ from ftp_uploader import Uploader
 from multiprocessing import Queue
 from wild_camera import Camera, CameraStatus
 from gpiozero import MotionSensor
+from signal import pause
+
+
+def handle_motion():
+    if camera.status == CameraStatus.RUNNING:
+        logger.info("wildlife-cam: Motion detected")
+        camera.start_clip(5, 'Motion detected!')
+        camera.capture_series(3, 'Motion detected!')
+        pir_sensor.wait_for_no_motion(1)
 
 
 logger.info("wildlife-cam: Starting")
@@ -67,15 +76,8 @@ try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
     camera.start()
-    while True:
-        if camera.status == CameraStatus.RUNNING:
-            pir_sensor.wait_for_motion()
-            logger.info("wildlife-cam: Motion detected")
-            camera.start_clip(5, 'Motion detected!')
-            camera.capture_series(3, 'Motion detected!')
-            pir_sensor.wait_for_no_motion(1)
-        else:
-            time.sleep(0.5)
+    pir_sensor.when_motion = handle_motion
+    pause()
 
 finally:
     logger.info("wildlife-cam: Stopping Wildlife Cam")
