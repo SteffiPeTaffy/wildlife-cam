@@ -1,13 +1,17 @@
-import os
-import subprocess
-
 from picamera import PiCamera, PiCameraRuntimeError
 from pathlib import Path
 from datetime import datetime
 from logzero import logger
 from threading import Timer
+from enum import Enum, auto
 
 from queue_worker import MediaItem, MediaType
+
+
+class CameraStatus(Enum):
+    RUNNING = auto()
+    PAUSED = auto()
+    STOPPED = auto()
 
 
 class Camera(PiCamera):
@@ -17,6 +21,7 @@ class Camera(PiCamera):
         self.handlers = []
         self.resolution = (1280, 720)
         self.framerate = 24
+        self.status = CameraStatus.STOPPED
 
     def capture_photo(self, caption=''):
         file_path = self.__capture_photo()
@@ -67,4 +72,21 @@ class Camera(PiCamera):
             self.start_recording(video_file_path, resize=(480, 320))
             logger.info("wildlife-cam: Started recording a video clip")
             t = Timer(seconds, self.__stop_clip, kwargs=({'file_path': video_file_path, 'caption': caption}))
+            t.start()
+
+    def start(self):
+        if self.status != CameraStatus.RUNNING:
+            self.status = CameraStatus.RUNNING
+            self.capture_photo('Wildlife Cam is up and ready to go!')
+
+    def stop(self):
+        if self.status != CameraStatus.STOPPED:
+            self.status = CameraStatus.STOPPED
+            self.capture_photo('Wildlife Cam is stopped now!')
+
+    def pause(self, seconds=60):
+        if self.status != CameraStatus.PAUSED:
+            self.status = CameraStatus.PAUSED
+            self.capture_photo('Wildlife Cam is paused for {} seconds!'.format(seconds))
+            t = Timer(seconds, self.start)
             t.start()

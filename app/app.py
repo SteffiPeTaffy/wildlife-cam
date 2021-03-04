@@ -8,7 +8,7 @@ from queue_worker import MediaWorker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
 from multiprocessing import Queue
-from wild_camera import Camera
+from wild_camera import Camera, CameraStatus
 from gpiozero import MotionSensor
 
 
@@ -31,6 +31,9 @@ if config.has_section('Telegram'):
     telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", camera.capture_photo)
     telegram.add_command_handler("clip", camera.start_clip)
+    telegram.add_command_handler("pause", camera.pause)
+    telegram.add_command_handler("start", camera.start)
+    telegram.add_command_handler("stop", camera.stop)
     telegram.start_polling()
 
     telegram_queue = Queue()
@@ -63,15 +66,18 @@ pir_sensor = MotionSensor(pir_sensor_pin)
 try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
-    camera.capture_photo('Wildlife Cam is up and ready to go!')
+    camera.start()
     while True:
-        pir_sensor.wait_for_motion()
-        logger.info("wildlife-cam: Motion detected")
-        camera.start_clip(5, 'Motion detected!')
-        camera.capture_series(3, 'Motion detected!')
-        pir_sensor.wait_for_no_motion(1)
+        if camera.status == CameraStatus.RUNNING:
+            pir_sensor.wait_for_motion()
+            logger.info("wildlife-cam: Motion detected")
+            camera.start_clip(5, 'Motion detected!')
+            camera.capture_series(3, 'Motion detected!')
+            pir_sensor.wait_for_no_motion(1)
+        else:
+            time.sleep(0.5)
 
 finally:
-    camera.capture_photo('Wildlife Cam is shutting down!')
     logger.info("wildlife-cam: Stopping Wildlife Cam")
+    camera.stop()
     camera.close()
