@@ -22,6 +22,7 @@ class Camera(PiCamera):
         self.resolution = (1280, 720)
         self.framerate = 24
         self.status = CameraStatus.STOPPED
+        self.pause_timer = None
 
     def capture_photo(self, caption=''):
         file_path = self.__capture_photo()
@@ -75,11 +76,15 @@ class Camera(PiCamera):
             t.start()
 
     def start(self):
+        if self.pause_timer:
+            self.pause_timer.cancel()
         if self.status != CameraStatus.RUNNING:
             self.status = CameraStatus.RUNNING
             self.capture_photo('Wildlife Cam is up and ready to go!')
 
     def stop(self):
+        if self.pause_timer:
+            self.pause_timer.cancel()
         if self.status != CameraStatus.STOPPED:
             self.status = CameraStatus.STOPPED
             self.capture_photo('Wildlife Cam is stopped now!')
@@ -88,5 +93,5 @@ class Camera(PiCamera):
         if self.status != CameraStatus.PAUSED:
             self.status = CameraStatus.PAUSED
             self.capture_photo('Wildlife Cam is paused for {} seconds!'.format(seconds))
-            t = Timer(seconds, self.start)
-            t.start()
+            self.pause_timer = Timer(seconds, self.start)
+            self.pause_timer.start()
