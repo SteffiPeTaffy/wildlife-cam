@@ -75,21 +75,23 @@ class Camera(PiCamera):
             t = Timer(seconds, self.__stop_clip, kwargs=({'file_path': video_file_path, 'caption': caption}))
             t.start()
 
+    def __cancel_pause_timer(self):
+        if self._pause_timer and self._pause_timer.is_alive():
+            try:
+                self._pause_timer.cancel()
+            except:
+                logger.info("wildlife-cam: Could not cancel timer")
+
     def start(self):
-        if self._pause_timer:
-            self._pause_timer.cancel()
-        if self.status != CameraStatus.RUNNING:
-            self.status = CameraStatus.RUNNING
+        self.__cancel_pause_timer()
+        self.status = CameraStatus.RUNNING
 
     def stop(self):
-        if self._pause_timer:
-            self._pause_timer.cancel()
-        if self.status != CameraStatus.STOPPED:
-            self.status = CameraStatus.STOPPED
+        self.__cancel_pause_timer()
+        self.status = CameraStatus.STOPPED
 
     def pause(self, seconds=60):
-        if self._pause_timer:
-            self._pause_timer.cancel()
+        self.__cancel_pause_timer()
 
         if not seconds or int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
