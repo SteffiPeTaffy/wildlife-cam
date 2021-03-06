@@ -99,3 +99,11 @@ class Camera(PiCamera):
         self._pause_timer.start()
 
         return seconds
+
+    def get_status(self):
+        if self._status == CameraStatus.RUNNING:
+            return 'up and running'
+        if self._status == CameraStatus.STOPPED:
+            return 'stopped'
+        if self._status == CameraStatus.PAUSED:
+            return 'paused'

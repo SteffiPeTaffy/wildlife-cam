@@ -39,14 +39,22 @@ if config.has_section('Telegram'):
     telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", lambda: camera.capture_photo(caption='Here\'s your photo!'))
     telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
+
     telegram.add_command_handler_with_arg("pause",
                                           lambda seconds: telegram.send_message(
-                                              message="Wildlife Cam paused for {} seconds!".format(
+                                              message="Wildlife Cam is paused for {} seconds!".format(
                                                   camera.pause(seconds=seconds))))
+
     telegram.add_command_handler("start",
-                                 lambda: [camera.start(), telegram.send_message(message="Wildlife Cam started!")])
+                                 lambda: [camera.start(),
+                                          camera.capture_photo('Wildlife Cam is started and ready to go!')])
     telegram.add_command_handler("stop",
-                                 lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam stopped!")])
+                                 lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam is stopped!")])
+
+    telegram.add_command_handler("status",
+                                 lambda: telegram.send_message(
+                                     message="Wildlife Cam is {}".format(camera.get_status())))
+
     telegram.start_polling()
 
     telegram_queue = Queue()
