@@ -1,4 +1,5 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
+
 import configparser
 from flask import Flask, render_template, request
 
@@ -21,11 +22,11 @@ def config_form():
         print(gpio_pin)
 
         config = load_config()
-        config.set('PirSensor', 'Pin', gpio_pin)
-        with open('/home/pi/WildlifeCam/WildlifeCam.ini', 'wb') as configfile:
+        config.set('PirSensor', 'Pin', str(gpio_pin))
+        with open('/home/pi/WildlifeCam/WildlifeCam.ini', 'w') as configfile:
             config.write(configfile)
 
-    return render_template('contact.html', form=form)
+    return render_template('index.html', form=form)
 
 
 @app.route('/', methods=['get'])
@@ -39,4 +40,5 @@ def index():
 
 
 if __name__ == '__main__':
+    app.config['SECRET_KEY'] = 'any secret string'
     app.run(host='0.0.0.0', debug=True)
