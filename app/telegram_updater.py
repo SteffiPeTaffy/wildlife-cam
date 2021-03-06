@@ -14,6 +14,11 @@ class Telegram(Updater):
         self.allowed_chat_id = allowed_chat_id
         super().__init__(self.api_token)
 
+    def add_command_handler_with_arg(self, command, handle_command_func):
+        self.dispatcher.add_handler(
+            CommandHandler(command, lambda update, context: handle_command_func(context.args[0]),
+                           filters=Filters.chat(chat_id=self.allowed_chat_id), pass_args=True))
+
     def add_command_handler(self, command, handle_command_func):
         self.dispatcher.add_handler(
             CommandHandler(command, lambda update, context: handle_command_func(),

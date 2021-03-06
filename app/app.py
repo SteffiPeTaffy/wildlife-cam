@@ -39,7 +39,7 @@ if config.has_section('Telegram'):
     telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", lambda: camera.capture_photo(caption='Here\'s your photo!'))
     telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
-    telegram.add_command_handler("pause", camera.pause)
+    telegram.add_command_handler_with_arg("pause", camera.pause)
     telegram.add_command_handler("start", camera.start)
     telegram.add_command_handler("stop", camera.stop)
     telegram.start_polling()
