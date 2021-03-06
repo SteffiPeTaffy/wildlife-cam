@@ -78,10 +78,7 @@ class Camera(PiCamera):
 
     def __cancel_pause_timer(self):
         if self._pause_timer and self._pause_timer.is_alive():
-            try:
-                self._pause_timer.cancel()
-            except:
-                logger.info("wildlife-cam: Could not cancel timer")
+            self._pause_timer.cancel()
 
     def start(self):
         self.__cancel_pause_timer()
