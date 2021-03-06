@@ -94,8 +94,6 @@ class Camera(PiCamera):
         logger.info("wildlife-cam: Wildlife Cam is stopped")
 
     def pause(self, seconds=60):
-        self.__cancel_pause_timer()
-
         if not seconds or int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
 
