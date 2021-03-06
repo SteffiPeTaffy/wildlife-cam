@@ -113,4 +113,4 @@ class Camera(PiCamera):
         if self.status == CameraStatus.STOPPED:
             return 'stopped'
         if self.status == CameraStatus.PAUSED:
-            return 'paused and has {} seconds left until starting again'.format(self._pause_timer.remaining())
+            return 'paused and has {} seconds left until starting again'.format(int(self._pause_timer.remaining()))
