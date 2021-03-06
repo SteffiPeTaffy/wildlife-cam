@@ -21,7 +21,7 @@ class Camera(PiCamera):
         self._handlers = []
         self.resolution = (1280, 720)
         self.framerate = 24
-        self._status = CameraStatus.STOPPED
+        self.status = CameraStatus.STOPPED
         self._pause_timer = None
 
     def capture_photo(self, caption=''):
@@ -78,32 +78,32 @@ class Camera(PiCamera):
     def start(self):
         if self._pause_timer:
             self._pause_timer.cancel()
-        if self._status != CameraStatus.RUNNING:
-            self._status = CameraStatus.RUNNING
+        if self.status != CameraStatus.RUNNING:
+            self.status = CameraStatus.RUNNING
 
     def stop(self):
         if self._pause_timer:
             self._pause_timer.cancel()
-        if self._status != CameraStatus.STOPPED:
-            self._status = CameraStatus.STOPPED
+        if self.status != CameraStatus.STOPPED:
+            self.status = CameraStatus.STOPPED
 
     def pause(self, seconds=60):
-        if self._pause_timer and self._pause_timer.is_alive():
+        if self._pause_timer:
             self._pause_timer.cancel()
 
         if int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
 
-        self._status = CameraStatus.PAUSED
+        self.status = CameraStatus.PAUSED
         self._pause_timer = Timer(seconds, self.start)
         self._pause_timer.start()
 
         return seconds
 
-    def get_status(self):
-        if self._status == CameraStatus.RUNNING:
+    def get_status_message(self):
+        if self.status == CameraStatus.RUNNING:
             return 'up and running'
-        if self._status == CameraStatus.STOPPED:
+        if self.status == CameraStatus.STOPPED:
             return 'stopped'
-        if self._status == CameraStatus.PAUSED:
+        if self.status == CameraStatus.PAUSED:
             return 'paused'

@@ -14,7 +14,7 @@ from signal import pause
 
 
 def handle_motion():
-    if camera._status == CameraStatus.RUNNING:
+    if camera.status == CameraStatus.RUNNING:
         logger.info("wildlife-cam: Motion detected")
         camera.start_clip(5, 'Motion detected!')
         camera.capture_series(3, 'Motion detected!')
@@ -47,13 +47,14 @@ if config.has_section('Telegram'):
 
     telegram.add_command_handler("start",
                                  lambda: [camera.start(),
+                                          telegram.send_message(message='Starting Wildlife Cam'),
                                           camera.capture_photo('Wildlife Cam is started and ready to go!')])
     telegram.add_command_handler("stop",
                                  lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam is stopped!")])
 
     telegram.add_command_handler("status",
                                  lambda: telegram.send_message(
-                                     message="Wildlife Cam is {}".format(camera.get_status())))
+                                     message="Wildlife Cam is {}".format(camera.get_status_message())))
 
     telegram.start_polling()
 
@@ -88,6 +89,7 @@ try:
     pir_sensor.wait_for_no_motion(2)
     logger.info("wildlife-cam: Ready and waiting for motion")
     camera.start()
+    camera.capture_photo('Wildlife Cam is started and ready to go!')
     pir_sensor.when_motion = handle_motion
     pause()
 
