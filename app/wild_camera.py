@@ -90,7 +90,7 @@ class Camera(PiCamera):
             self.capture_photo('Wildlife Cam is stopped now!')
 
     def pause(self, seconds=60):
-        if type(seconds) != int or type(seconds) != float:
+        if int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
 
         if self.status != CameraStatus.PAUSED:
