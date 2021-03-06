@@ -37,14 +37,14 @@ def convert_video(queue_item):
 
 
 class MediaWorker(Process):
-    def __init__(self, queue, queue_function, *args, **kwargs):
+    def __init__(self, queue, queue_function, sleep=1.5):
         self.queue = queue
         self.queue_function = queue_function
-        super().__init__(*args, **kwargs)
+        self._sleep = sleep
+        super().__init__()
 
     def run(self):
         while True:
-            time.sleep(1.5)
             if not self.queue.empty():
                 queue_item = self.queue.get(timeout=3)
                 try:
@@ -53,3 +53,5 @@ class MediaWorker(Process):
                     self.queue_function(queue_item)
                 except Exception as e:
                     logger.exception(e)
+            time.sleep(self._sleep)
+

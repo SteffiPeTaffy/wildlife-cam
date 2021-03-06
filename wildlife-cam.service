@@ -7,8 +7,6 @@ User=pi
 ExecStart=/usr/bin/python3 /home/pi/WildlifeCam/wildlife-cam/app/app.py
 Restart=on-failure
 RestartSec=30
-StartLimitInterval=350
-StartLimitBurst=10
 
 [Install]
 WantedBy=multi-user.target

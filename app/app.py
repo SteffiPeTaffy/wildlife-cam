@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import time
 from logzero import logger, logfile
@@ -37,8 +37,8 @@ if config.has_section('Telegram'):
     allowed_chat_id = config.getint('Telegram', 'ChatId')
 
     telegram = Telegram(api_token, allowed_chat_id)
-    telegram.add_command_handler("snap", camera.capture_photo)
-    telegram.add_command_handler("clip", camera.start_clip)
+    telegram.add_command_handler("snap", lambda: camera.capture_photo(caption='Here\'s your photo!'))
+    telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
     telegram.add_command_handler("pause", camera.pause)
     telegram.add_command_handler("start", camera.start)
     telegram.add_command_handler("stop", camera.stop)
@@ -47,7 +47,7 @@ if config.has_section('Telegram'):
     telegram_queue = Queue()
     camera.add_camera_handler(telegram_queue.put_nowait)
 
-    telegram_worker = MediaWorker(telegram_queue, telegram.send_media_message)
+    telegram_worker = MediaWorker(telegram_queue, telegram.send_media_message, 3)
     telegram_worker.start()
 
 # Setup FTP Upload if wanted
@@ -64,7 +64,7 @@ if config.has_section('SFTP'):
     ftp_queue = Queue()
     camera.add_camera_handler(ftp_queue.put_nowait)
 
-    ftp_worker = MediaWorker(ftp_queue, ftp_uploader.upload)
+    ftp_worker = MediaWorker(ftp_queue, ftp_uploader.upload, 1)
     ftp_worker.start()
 
 # Setup PIR sensor
