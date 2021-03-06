@@ -4,9 +4,7 @@
 
 readonly HOME_DIR=/home/pi/
 readonly BASE_DIR_NAME=WildlifeCam/
-readonly PHOTO_DIR_NAME=Photos/
 readonly GIT_BASE_DIR_NAME=wildlife-cam
-readonly CONFIG_FILE_NAME=WildlifeCam.ini
 
 # Make sure everything is up-to-date
 sudo apt-get update
@@ -27,7 +25,7 @@ if [ -n "$CHANGED" ]; then
   echo "It looks like you have made changes to the original code base"
   echo "You will lose those changes if you update"
   echo -n "Continue anyways? [y/n]"
-  read answer
+  read -r answer
   if [ "$answer" != "${answer#[Nn]}" ] ;then
     echo
     echo "Updating Wildlife Cam aborted"
@@ -41,6 +39,8 @@ fi
 
 echo "Fetch latest Wildlife Cam version"
 git pull --rebase
+
+sudo systemctl restart wildlife-cam
 
 echo
 echo "DONE. You are up-to-date again!"
