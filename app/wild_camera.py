@@ -5,6 +5,7 @@ from logzero import logger
 from threading import Timer
 from enum import Enum, auto
 
+from app.wild_timer import RemainingTimer
 from queue_worker import MediaItem, MediaType
 
 
@@ -100,8 +101,8 @@ class Camera(PiCamera):
             seconds = 60
 
         self.status = CameraStatus.PAUSED
-        self._pause_timer = Timer(int(seconds), self.start)
-        self._pause_timer.start()
+        self._pause_timer = RemainingTimer(int(seconds), self.start)
+        self._pause_timer.start_timer()
         logger.info("wildlife-cam: Wildlife Cam is paused for {} seconds".format(seconds))
 
         return seconds
@@ -112,4 +113,4 @@ class Camera(PiCamera):
         if self.status == CameraStatus.STOPPED:
             return 'stopped'
         if self.status == CameraStatus.PAUSED:
-            return 'paused'
+            return 'paused and has {} seconds left until starting again'.format(self._pause_timer.remaining())
