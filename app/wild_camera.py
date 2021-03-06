@@ -5,7 +5,7 @@ from logzero import logger
 from threading import Timer
 from enum import Enum, auto
 
-from app.wild_timer import RemainingTimer
+from wild_timer import RemainingTimer
 from queue_worker import MediaItem, MediaType
 
 
