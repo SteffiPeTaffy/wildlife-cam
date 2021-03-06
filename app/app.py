@@ -46,9 +46,8 @@ if config.has_section('Telegram'):
                                                   camera.pause(seconds=seconds))))
 
     telegram.add_command_handler("start",
-                                 lambda: [camera.start(),
-                                          telegram.send_message(message='Starting Wildlife Cam'),
-                                          camera.capture_photo('Wildlife Cam is started and ready to go!')])
+                                 lambda: [telegram.send_message(message='Starting Wildlife Cam'), camera.start()])
+
     telegram.add_command_handler("stop",
                                  lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam is stopped!")])
 
@@ -87,9 +86,8 @@ pir_sensor = MotionSensor(pir_sensor_pin)
 
 try:
     pir_sensor.wait_for_no_motion(2)
-    logger.info("wildlife-cam: Ready and waiting for motion")
+    logger.info("wildlife-cam: Motion sensor ready and waiting for motion")
     camera.start()
-    camera.capture_photo('Wildlife Cam is started and ready to go!')
     pir_sensor.when_motion = handle_motion
     pause()
 
