@@ -41,7 +41,7 @@ if config.has_section('Telegram'):
     telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
 
     telegram.add_command_handler_with_arg("pause",
-                                          lambda seconds: telegram.send_message(
+                                          lambda seconds=60: telegram.send_message(
                                               message="Wildlife Cam is paused for {} seconds!".format(
                                                   camera.pause(seconds=seconds))))
 
