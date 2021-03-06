@@ -98,7 +98,7 @@ class Camera(PiCamera):
             seconds = 60
 
         self.status = CameraStatus.PAUSED
-        self._pause_timer = Timer(seconds, self.start)
+        self._pause_timer = Timer(int(seconds), self.start)
         self._pause_timer.start()
         logger.info("wildlife-cam: Wildlife Cam is paused for {} seconds".format(seconds))
 
