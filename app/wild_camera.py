@@ -17,12 +17,12 @@ class CameraStatus(Enum):
 class Camera(PiCamera):
     def __init__(self, photo_dir_path, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.photo_dir_path = photo_dir_path
-        self.handlers = []
+        self._photo_dir_path = photo_dir_path
+        self._handlers = []
         self.resolution = (1280, 720)
         self.framerate = 24
-        self.status = CameraStatus.STOPPED
-        self.pause_timer = None
+        self._status = CameraStatus.STOPPED
+        self._pause_timer = None
 
     def capture_photo(self, caption=''):
         file_path = self.__capture_photo()
@@ -33,7 +33,7 @@ class Camera(PiCamera):
     def __get_file_path(self, file_ending):
         current_time = datetime.utcnow()
         sub_folder_name = current_time.strftime("%Y-%m-%d")
-        sub_folder_path = self.photo_dir_path + sub_folder_name + "/"
+        sub_folder_path = self._photo_dir_path + sub_folder_name + "/"
         Path(sub_folder_path).mkdir(parents=True, exist_ok=True)
 
         file_name = current_time.strftime("%Y-%m-%d-%H-%M-%S-%f")[:-3] + file_ending
@@ -41,11 +41,11 @@ class Camera(PiCamera):
         return file_path
 
     def __call_handlers(self, item):
-        for handler in self.handlers:
+        for handler in self._handlers:
             handler(item)
 
     def add_camera_handler(self, handler):
-        self.handlers.append(handler)
+        self._handlers.append(handler)
 
     def __capture_photo(self):
         file_path = self.__get_file_path('.jpeg')
@@ -76,25 +76,26 @@ class Camera(PiCamera):
             t.start()
 
     def start(self):
-        if self.pause_timer:
-            self.pause_timer.cancel()
-        if self.status != CameraStatus.RUNNING:
-            self.status = CameraStatus.RUNNING
-            self.capture_photo('Wildlife Cam is up and ready to go!')
+        if self._pause_timer:
+            self._pause_timer.cancel()
+        if self._status != CameraStatus.RUNNING:
+            self._status = CameraStatus.RUNNING
 
     def stop(self):
-        if self.pause_timer:
-            self.pause_timer.cancel()
-        if self.status != CameraStatus.STOPPED:
-            self.status = CameraStatus.STOPPED
-            self.capture_photo('Wildlife Cam is stopped now!')
+        if self._pause_timer:
+            self._pause_timer.cancel()
+        if self._status != CameraStatus.STOPPED:
+            self._status = CameraStatus.STOPPED
 
     def pause(self, seconds=60):
+        if self._pause_timer and self._pause_timer.is_alive():
+            self._pause_timer.cancel()
+
         if int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
 
-        if self.status != CameraStatus.PAUSED:
-            self.status = CameraStatus.PAUSED
-            self.capture_photo('Wildlife Cam is paused for {} seconds!'.format(seconds))
-            self.pause_timer = Timer(seconds, self.start)
-            self.pause_timer.start()
+        self._status = CameraStatus.PAUSED
+        self._pause_timer = Timer(seconds, self.start)
+        self._pause_timer.start()
+
+        return seconds

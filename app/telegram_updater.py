@@ -24,6 +24,9 @@ class Telegram(Updater):
             CommandHandler(command, lambda update, context: handle_command_func(),
                            filters=Filters.chat(chat_id=self.allowed_chat_id)))
 
+    def send_message(self, message=''):
+        self.bot.send_message(chat_id=self.allowed_chat_id, text=message)
+
     def send_media_message(self, queue_item: MediaItem):
         logger.info("wildlife-cam: Sending message to Telegram chat %s ", self.allowed_chat_id)
 

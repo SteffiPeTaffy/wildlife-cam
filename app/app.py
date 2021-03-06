@@ -14,7 +14,7 @@ from signal import pause
 
 
 def handle_motion():
-    if camera.status == CameraStatus.RUNNING:
+    if camera._status == CameraStatus.RUNNING:
         logger.info("wildlife-cam: Motion detected")
         camera.start_clip(5, 'Motion detected!')
         camera.capture_series(3, 'Motion detected!')
@@ -39,9 +39,14 @@ if config.has_section('Telegram'):
     telegram = Telegram(api_token, allowed_chat_id)
     telegram.add_command_handler("snap", lambda: camera.capture_photo(caption='Here\'s your photo!'))
     telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
-    telegram.add_command_handler_with_arg("pause", camera.pause)
-    telegram.add_command_handler("start", camera.start)
-    telegram.add_command_handler("stop", camera.stop)
+    telegram.add_command_handler_with_arg("pause",
+                                          lambda seconds: telegram.send_message(
+                                              message="Wildlife Cam paused for {} seconds!".format(
+                                                  camera.pause(seconds=seconds))))
+    telegram.add_command_handler("start",
+                                 lambda: [camera.start(), telegram.send_message(message="Wildlife Cam started!")])
+    telegram.add_command_handler("stop",
+                                 lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam stopped!")])
     telegram.start_polling()
 
     telegram_queue = Queue()
