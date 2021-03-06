@@ -91,7 +91,7 @@ class Camera(PiCamera):
         if self._pause_timer:
             self._pause_timer.cancel()
 
-        if int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
+        if not seconds or int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
             seconds = 60
 
         self.status = CameraStatus.PAUSED
