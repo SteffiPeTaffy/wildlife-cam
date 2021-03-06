@@ -1,0 +1,21 @@
+<html>
+<head>
+    <title>Wildlife Cam </title>
+    <link rel="stylesheet" href='/static/style.css' />
+</head>
+<body>
+<h1>Wildlife Cam Config</h1>
+
+<form action="" method="post">
+
+    <p>{{ field.label() }}</p>
+    <p>{{ field }}
+        {% for error in field.errors %}
+        {{ error }}
+        {% endfor %}
+    </p>
+    {% endfor %}
+
+</form>
+</body>
+</html>

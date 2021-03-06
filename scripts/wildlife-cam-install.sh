@@ -49,7 +49,8 @@ pip3 install python-telegram-bot
 
 # Install wildlife-cam-web dependencies
 pip3 install flask
-
+pip3 install Flask-WTF
+pip3 install WTForms
 
 # Check if Wildlife Cam folder already exists
 cd ${HOME_DIR} || exit
