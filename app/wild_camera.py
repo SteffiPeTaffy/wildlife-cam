@@ -72,7 +72,7 @@ class Camera(PiCamera):
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
             logger.info("wildlife-cam: Started recording a video clip")
-            t = Timer(seconds, self.__stop_clip, **{'file_path': video_file_path, 'caption': caption})
+            t = Timer(seconds, self.__stop_clip, kwargs=({'file_path': video_file_path, 'caption': caption}))
             t.start()
 
     def start(self):
