@@ -59,7 +59,10 @@ def config_form():
             config.write(configfile)
 
         os.system("sudo systemctl restart wildlife-cam")
-        flash("Saved new config!")
+        flash("Saved new config successfully!", 'success')
+
+    else:
+        flash("Failed to save config!", 'error')
 
     return render_template('index.html', form=form)
 

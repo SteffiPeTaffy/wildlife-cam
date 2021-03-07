@@ -22,3 +22,17 @@ h1 {
     color: white;
     margin-top: 20px;
 }
+
+.success {
+    color: #444444;
+    background-color: darkseagreen;
+    border-color: seagreen;
+    border-radius: 5px;
+}
+
+.error {
+    color: #444444;
+    background-color: palevioletred;
+    border-color: darkred;
+    border-radius: 5px;
+}
