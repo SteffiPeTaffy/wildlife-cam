@@ -144,6 +144,13 @@ chmod u+x "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}/app/app.py"
 sudo systemctl start wildlife-cam
 sudo systemctl enable wildlife-cam
 
+# Create wildlife-cam-web.service
+cd "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}" || exit
+sudo cp wildlife-cam-web.service /etc/systemd/system/
+chmod u+x "${HOME_DIR}${BASE_DIR_NAME}${GIT_BASE_DIR_NAME}/web/web.py"
+sudo systemctl start wildlife-cam-web
+sudo systemctl enable wildlife-cam-web
+
 echo
 echo "DONE. Let's watch some squirrels :)"
 echo "Find more information on the github account:"

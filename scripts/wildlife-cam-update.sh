@@ -41,6 +41,7 @@ echo "Fetch latest Wildlife Cam version"
 git pull --rebase
 
 sudo systemctl restart wildlife-cam
+sudo systemctl restart wildlife-cam-web
 
 echo
 echo "DONE. You are up-to-date again!"
