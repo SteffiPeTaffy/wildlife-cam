@@ -48,7 +48,7 @@ def config_form():
             if ftp_ip_password:
                 config.set('SFTP', 'Password', ftp_ip_password)
             config.set('SFTP', 'IpAddress', ftp_ip_address)
-            config.set('SFTP', 'Port', ftp_ip_port)
+            config.set('SFTP', 'Port', str(ftp_ip_port))
             config.set('SFTP', 'Username', ftp_ip_user)
             config.set('SFTP', 'Directory', ftp_ip_directory)
         else:
