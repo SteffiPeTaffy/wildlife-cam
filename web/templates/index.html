@@ -17,7 +17,7 @@
         {{ field(**kwargs)|safe }}
         <ul>
             {% for error in field.errors %}
-            <li style="color:red;">{{ error }}</li>
+            <li style="color:darkred;">{{ error }}</li>
             {% endfor %}
         </ul>
         {% endmacro %}

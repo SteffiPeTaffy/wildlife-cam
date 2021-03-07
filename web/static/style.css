@@ -24,15 +24,16 @@ h1 {
 }
 
 .success {
-    color: #444444;
+    color: white;
     background-color: darkseagreen;
-    border-color: seagreen;
     border-radius: 5px;
+    border: 1px solid seagreen;
+    padding: 5px;
 }
 
 .error {
-    color: #444444;
+    color: white;
     background-color: palevioletred;
-    border-color: darkred;
+    border: 1px solid darkred;
     border-radius: 5px;
 }
