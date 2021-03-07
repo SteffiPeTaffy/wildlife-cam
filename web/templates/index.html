@@ -2,6 +2,7 @@
 <head>
     <title>Wildlife Cam </title>
     <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
 </head>
 <body>
 <div class="form-wrapper">
@@ -15,18 +16,25 @@
     </ul>
     {% endmacro %}
 
-    <h1>Wildlife Cam Config</h1>
     {{ form.csrf_token() }}
 
-    <h2>Motion Sensor</h2>
+    <h1>Wildlife Cam Config</h1>
+    <p>Please note that making changes to the configuration of your Wildlife Cam will restart the service. It will take
+        a couple of seconds until your Cam is up and running again.</p>
+
+    <hr>
+    <hr>
+    <h3>Motion Sensor</h3>
     {{ render_field(form.gpio_pin) }}
 
-    <h2>Telegram</h2>
+    <hr>
+    <h3>Telegram</h3>
     {{ render_field(form.telegram_enabled) }}
     {{ render_field(form.telegram_api_key) }}
     {{ render_field(form.telegram_chat_id) }}
 
-    <h2>FTP Upload</h2>
+    <hr>
+    <h3>FTP Upload</h3>
     {{ render_field(form.ftp_enabled) }}
     {{ render_field(form.ftp_ip_address) }}
     {{ render_field(form.ftp_ip_port) }}
@@ -34,7 +42,7 @@
     {{ render_field(form.ftp_ip_password) }}
     {{ render_field(form.ftp_ip_directory) }}
 
-    <input type=submit value=Submit>
+    <input type=submit value=Submit class="submit-button">
     </form>
 </div>
 </body>
