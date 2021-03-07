@@ -29,16 +29,36 @@ def config_form():
         if telegram_enabled:
             if not config.has_section('Telegram'):
                 config.add_section('Telegram')
-            config.set('Telegram', 'ApiKey', telegram_api_key)
+            if telegram_api_key:
+                config.set('Telegram', 'ApiKey', telegram_api_key)
             config.set('Telegram', 'ChatId', telegram_chat_id)
         else:
             if config.has_section('Telegram'):
                 config.remove_section('Telegram')
 
+        ftp_enabled = form.ftp_enabled.data
+        ftp_ip_address = form.ftp_ip_address.data
+        ftp_ip_port = form.ftp_ip_port.data
+        ftp_ip_user = form.ftp_ip_user.data
+        ftp_ip_password = form.ftp_ip_password.data
+        ftp_ip_directory = form.ftp_ip_directory.data
+        if ftp_enabled:
+            if not config.has_section('SFTP'):
+                config.add_section('SFTP')
+            if ftp_ip_password:
+                config.set('SFTP', 'Password', ftp_ip_password)
+            config.set('SFTP', 'IpAddress', ftp_ip_address)
+            config.set('SFTP', 'Port', ftp_ip_port)
+            config.set('SFTP', 'Username', ftp_ip_user)
+            config.set('SFTP', 'Directory', ftp_ip_directory)
+        else:
+            if config.has_section('SFTP'):
+                config.remove_section('SFTP')
+
         with open('/home/pi/WildlifeCam/WildlifeCam.ini', 'w') as configfile:
             config.write(configfile)
 
-        os.system("sudo systemctl restart wildlife-cam")
+        # os.system("sudo systemctl restart wildlife-cam")
 
     return render_template('index.html', form=form)
 
@@ -53,6 +73,13 @@ def index():
     form.telegram_enabled.data = config.has_section('Telegram')
     form.telegram_api_key.data = config.get('Telegram', 'ApiKey')
     form.telegram_chat_id.data = config.get('Telegram', 'ChatId')
+
+    form.ftp_enabled = config.has_section('SFTP')
+    form.ftp_ip_address = config.get('SFTP', 'IpAddress')
+    form.ftp_ip_port = config.get('SFTP', 'Port')
+    form.ftp_ip_user = config.get('SFTP', 'Username')
+    form.ftp_ip_password = config.get('SFTP', 'Password')
+    form.ftp_ip_directory = config.get('SFTP', 'Directory')
 
     return render_template('index.html', form=form)
 
