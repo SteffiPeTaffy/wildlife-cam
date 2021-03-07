@@ -58,7 +58,7 @@ def config_form():
         with open('/home/pi/WildlifeCam/WildlifeCam.ini', 'w') as configfile:
             config.write(configfile)
 
-        # os.system("sudo systemctl restart wildlife-cam")
+        os.system("sudo systemctl restart wildlife-cam")
 
     return render_template('index.html', form=form)
 
