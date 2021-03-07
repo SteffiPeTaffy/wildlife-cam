@@ -6,18 +6,18 @@
 </head>
 <body>
 <div class="form-wrapper">
-    {% macro render_field(field) %}
-    {{ field.label }}
-    {{ field(**kwargs)|safe }}
-    <ul>
-        {% for error in field.errors %}
-        <li style="color:red;">{{ error }}</li>
-        {% endfor %}
-    </ul>
-    {% endmacro %}
-
-    {{ form.csrf_token() }}
     <form action="" method="post">
+        {% macro render_field(field) %}
+        {{ field.label }}
+        {{ field(**kwargs)|safe }}
+        <ul>
+            {% for error in field.errors %}
+            <li style="color:red;">{{ error }}</li>
+            {% endfor %}
+        </ul>
+        {% endmacro %}
+
+        {{ form.csrf_token() }}
 
         <h1>Wildlife Cam Config</h1>
         <p>Please note that making changes to the configuration of your Wildlife Cam will restart the service. It will
