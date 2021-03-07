@@ -1,44 +1,40 @@
 <html>
 <head>
     <title>Wildlife Cam </title>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
 </head>
 <body>
 <div class="form-wrapper">
+    {% macro render_field(field) %}
+    {{ field.label }}
+    {{ field(**kwargs)|safe }}
+    <ul>
+        {% for error in field.errors %}
+        <li style="color:red;">{{ error }}</li>
+        {% endfor %}
+    </ul>
+    {% endmacro %}
+
     <h1>Wildlife Cam Config</h1>
+    {{ form.csrf_token() }}
 
-    <form action="" method="post">
+    <h2>Motion Sensor</h2>
+    {{ render_field(form.gpio_pin) }}
 
-        {% macro render_field(field) %}
-        <dt>{{ field.label }}
-        <dd>{{ field(**kwargs)|safe }}
-            {% if field.errors %}
-            {% for error in field.errors %}
-            {{ error }}
-            {% endfor %}
-            {% endif %}
-        </dd>
-        {% endmacro %}
+    <h2>Telegram</h2>
+    {{ render_field(form.telegram_enabled) }}
+    {{ render_field(form.telegram_api_key) }}
+    {{ render_field(form.telegram_chat_id) }}
 
-        {{ form.csrf_token() }}
+    <h2>FTP Upload</h2>
+    {{ render_field(form.ftp_enabled) }}
+    {{ render_field(form.ftp_ip_address) }}
+    {{ render_field(form.ftp_ip_port) }}
+    {{ render_field(form.ftp_ip_user) }}
+    {{ render_field(form.ftp_ip_password) }}
+    {{ render_field(form.ftp_ip_directory) }}
 
-        <h2>Motion Sensor</h2>
-        {{ render_field(form.gpio_pin) }}
-
-        <h2>Telegram</h2>
-        {{ render_field(form.telegram_enabled) }}
-        {{ render_field(form.telegram_api_key) }}
-        {{ render_field(form.telegram_chat_id) }}
-
-        <h2>FTP Upload</h2>
-        {{ render_field(form.ftp_enabled) }}
-        {{ render_field(form.ftp_ip_address) }}
-        {{ render_field(form.ftp_ip_port) }}
-        {{ render_field(form.ftp_ip_user) }}
-        {{ render_field(form.ftp_ip_password) }}
-        {{ render_field(form.ftp_ip_directory) }}
-
-        <input type=submit value=Submit>
+    <input type=submit value=Submit>
     </form>
 </div>
 </body>
