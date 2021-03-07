@@ -17,32 +17,34 @@
     {% endmacro %}
 
     {{ form.csrf_token() }}
+    <form action="" method="post">
 
-    <h1>Wildlife Cam Config</h1>
-    <p>Please note that making changes to the configuration of your Wildlife Cam will restart the service. It will take
-        a couple of seconds until your Cam is up and running again.</p>
+        <h1>Wildlife Cam Config</h1>
+        <p>Please note that making changes to the configuration of your Wildlife Cam will restart the service. It will
+            take
+            a couple of seconds until your Cam is up and running again.</p>
 
-    <hr>
-    <hr>
-    <h3>Motion Sensor</h3>
-    {{ render_field(form.gpio_pin) }}
+        <hr>
+        <hr>
+        <h3>Motion Sensor</h3>
+        {{ render_field(form.gpio_pin) }}
 
-    <hr>
-    <h3>Telegram</h3>
-    {{ render_field(form.telegram_enabled) }}
-    {{ render_field(form.telegram_api_key) }}
-    {{ render_field(form.telegram_chat_id) }}
+        <hr>
+        <h3>Telegram</h3>
+        {{ render_field(form.telegram_enabled) }}
+        {{ render_field(form.telegram_api_key) }}
+        {{ render_field(form.telegram_chat_id) }}
 
-    <hr>
-    <h3>FTP Upload</h3>
-    {{ render_field(form.ftp_enabled) }}
-    {{ render_field(form.ftp_ip_address) }}
-    {{ render_field(form.ftp_ip_port) }}
-    {{ render_field(form.ftp_ip_user) }}
-    {{ render_field(form.ftp_ip_password) }}
-    {{ render_field(form.ftp_ip_directory) }}
+        <hr>
+        <h3>FTP Upload</h3>
+        {{ render_field(form.ftp_enabled) }}
+        {{ render_field(form.ftp_ip_address) }}
+        {{ render_field(form.ftp_ip_port) }}
+        {{ render_field(form.ftp_ip_user) }}
+        {{ render_field(form.ftp_ip_password) }}
+        {{ render_field(form.ftp_ip_directory) }}
 
-    <input type=submit value=Submit class="submit-button">
+        <input type=submit value=Submit class="submit-button">
     </form>
 </div>
 </body>
