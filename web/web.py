@@ -74,12 +74,12 @@ def index():
     form.telegram_api_key.data = config.get('Telegram', 'ApiKey')
     form.telegram_chat_id.data = config.get('Telegram', 'ChatId')
 
-    form.ftp_enabled = config.has_section('SFTP')
-    form.ftp_ip_address = config.get('SFTP', 'IpAddress')
-    form.ftp_ip_port = config.get('SFTP', 'Port')
-    form.ftp_ip_user = config.get('SFTP', 'Username')
-    form.ftp_ip_password = config.get('SFTP', 'Password')
-    form.ftp_ip_directory = config.get('SFTP', 'Directory')
+    form.ftp_enabled.data = config.has_section('SFTP')
+    form.ftp_ip_address.data = config.get('SFTP', 'IpAddress')
+    form.ftp_ip_port.data = config.get('SFTP', 'Port')
+    form.ftp_ip_user.data = config.get('SFTP', 'Username')
+    form.ftp_ip_password.data = config.get('SFTP', 'Password')
+    form.ftp_ip_directory.data = config.get('SFTP', 'Directory')
 
     return render_template('index.html', form=form)
 

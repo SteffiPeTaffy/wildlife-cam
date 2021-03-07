@@ -8,23 +8,34 @@
 
 <form action="" method="post">
 
+    {% macro render_field(field) %}
+    <dt>{{ field.label }}
+    <dd>{{ field(**kwargs)|safe }}
+        {% if field.errors %}
+        {% for error in field.errors %}
+        {{ error }}
+        {% endfor %}
+        {% endif %}
+    </dd>
+    {% endmacro %}
+
     {{ form.csrf_token() }}
 
     <h2>Motion Sensor</h2>
-    {{ form.gpio_pin }}
+    {{ render_field(form.gpio_pin) }}
 
     <h2>Telegram</h2>
-    {{ form.telegram_enabled }}
-    {{ form.telegram_api_key }}
-    {{ form.telegram_chat_id }}
+    {{ render_field(form.telegram_enabled) }}
+    {{ render_field(form.telegram_api_key) }}
+    {{ render_field(form.telegram_chat_id) }}
 
     <h2>FTP Upload</h2>
-    {{ form.ftp_enabled }}
-    {{ form.ftp_ip_address }}
-    {{ form.ftp_ip_port }}
-    {{ form.ftp_ip_user }}
-    {{ form.ftp_ip_password }}
-    {{ form.ftp_ip_directory }}
+    {{ render_field(form.ftp_enabled) }}
+    {{ render_field(form.ftp_ip_address) }}
+    {{ render_field(form.ftp_ip_port) }}
+    {{ render_field(form.ftp_ip_user) }}
+    {{ render_field(form.ftp_ip_password) }}
+    {{ render_field(form.ftp_ip_directory) }}
 
     <input type=submit value=Submit>
 </form>
