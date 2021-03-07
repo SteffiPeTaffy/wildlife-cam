@@ -6,6 +6,13 @@
 </head>
 <body>
 <div class="form-wrapper">
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
     <form action="" method="post">
         {% macro render_field(field) %}
         {{ field.label }}

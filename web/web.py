@@ -2,7 +2,7 @@
 
 import configparser
 import os
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, flash
 from config_form import ConfigForm
 
 app = Flask(__name__)
@@ -59,6 +59,7 @@ def config_form():
             config.write(configfile)
 
         os.system("sudo systemctl restart wildlife-cam")
+        flash("Saved new config!")
 
     return render_template('index.html', form=form)
 
