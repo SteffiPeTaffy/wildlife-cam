@@ -1,16 +1,6 @@
-form.form-example {
-    display: table;
-}
-
-div.form-example {
-    display: table-row;
-}
-
-label, input {
-    display: table-cell;
-    margin-bottom: 10px;
-}
-
-label {
-    padding-right: 10px;
+.form-wrapper {
+    width: 50%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding-left: 20px;
 }

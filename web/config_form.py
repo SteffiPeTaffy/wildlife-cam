@@ -7,10 +7,10 @@ from custome_validators import RequiredIf
 
 class ConfigForm(FlaskForm):
     gpio_pin = IntegerField("GPIO Pin: ", validators=[DataRequired()])
-    telegram_enabled = BooleanField("Telegram")
+    telegram_enabled = BooleanField("Enable")
     telegram_api_key = PasswordField("API Key")
     telegram_chat_id = StringField("Chat ID", validators=[RequiredIf('telegram_enabled')])
-    ftp_enabled = BooleanField("FTP Upload")
+    ftp_enabled = BooleanField("Enable")
     ftp_ip_address = StringField("IP Address", validators=[RequiredIf('ftp_enabled')])
     ftp_ip_port = IntegerField("Port", validators=[RequiredIf('ftp_enabled')])
     ftp_ip_user = StringField("User", validators=[RequiredIf('ftp_enabled')])
