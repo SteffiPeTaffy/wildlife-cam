@@ -8,17 +8,8 @@ from queue_worker import MediaWorker
 from telegram_updater import Telegram
 from ftp_uploader import Uploader
 from multiprocessing import Queue
-from wild_camera import Camera, CameraStatus
-from gpiozero import MotionSensor
+from wild_camera import MotionCamera
 from signal import pause
-
-
-def handle_motion():
-    if camera.status == CameraStatus.RUNNING:
-        logger.info("wildlife-cam: Motion detected")
-        camera.start_clip(5, 'Motion detected!')
-        camera.capture_series(3, 'Motion detected!')
-
 
 logger.info("wildlife-cam: Starting")
 
@@ -27,8 +18,8 @@ config = WildlifeCamConfig('/home/pi/WildlifeCam/WildlifeCam.ini')
 
 # Setup Camera
 photo_dir_path = config.get('General', 'PhotoDirPath')
-camera = Camera(photo_dir_path)
-time.sleep(2)
+pir_sensor_pin = config.getint('PirSensor', 'Pin')
+motion_camera = MotionCamera(photo_dir_path, pir_sensor_pin)
 
 # Setup Telegram if wanted
 if config.has_section('Telegram'):
@@ -37,28 +28,28 @@ if config.has_section('Telegram'):
     allowed_chat_id = config.getint('Telegram', 'ChatId')
 
     telegram = Telegram(api_token, allowed_chat_id)
-    telegram.add_command_handler("snap", lambda: camera.capture_photo(caption='Here\'s your photo!'))
-    telegram.add_command_handler("clip", lambda: camera.start_clip(caption='Here\'s your clip!'))
+    telegram.add_command_handler("snap", lambda: motion_camera.capture_photo(caption='Here\'s your photo!'))
+    telegram.add_command_handler("clip", lambda: motion_camera.start_clip(caption='Here\'s your clip!'))
 
     telegram.add_command_handler_with_arg("pause",
                                           lambda seconds=60: telegram.send_message(
                                               message="Wildlife Cam is paused for {} seconds!".format(
-                                                  camera.pause(seconds=seconds))))
+                                                  motion_camera.pause(seconds=seconds))))
 
     telegram.add_command_handler("start",
-                                 lambda: [telegram.send_message(message='Starting Wildlife Cam'), camera.start()])
+                                 lambda: [telegram.send_message(message='Starting Wildlife Cam'), motion_camera.start()])
 
     telegram.add_command_handler("stop",
-                                 lambda: [camera.stop(), telegram.send_message(message="Wildlife Cam is stopped!")])
+                                 lambda: [motion_camera.stop(), telegram.send_message(message="Wildlife Cam is stopped!")])
 
     telegram.add_command_handler("status",
                                  lambda: telegram.send_message(
-                                     message="Wildlife Cam is {}".format(camera.get_status_message())))
+                                     message="Wildlife Cam is {}".format(motion_camera.get_status_message())))
 
     telegram.start_polling()
 
     telegram_queue = Queue()
-    camera.add_camera_handler(telegram_queue.put_nowait)
+    motion_camera.add_camera_handler(telegram_queue.put_nowait)
 
     telegram_worker = MediaWorker(telegram_queue, telegram.send_media_message, 3)
     telegram_worker.start()
@@ -75,23 +66,10 @@ if config.has_section('SFTP'):
     ftp_uploader = Uploader(sftp_host, sftp_port, sftp_username, sftp_password, sftp_dir)
 
     ftp_queue = Queue()
-    camera.add_camera_handler(ftp_queue.put_nowait)
+    motion_camera.add_camera_handler(ftp_queue.put_nowait)
 
     ftp_worker = MediaWorker(ftp_queue, ftp_uploader.upload, 1)
     ftp_worker.start()
 
-# Setup PIR sensor
-pir_sensor_pin = config.getint('PirSensor', 'Pin')
-pir_sensor = MotionSensor(pir_sensor_pin)
-
-try:
-    pir_sensor.wait_for_no_motion(2)
-    logger.info("wildlife-cam: Motion sensor ready and waiting for motion")
-    camera.start()
-    pir_sensor.when_motion = handle_motion
-    pause()
-
-finally:
-    logger.info("wildlife-cam: Stopping Wildlife Cam")
-    camera.stop()
-    camera.close()
+motion_camera.start()
+pause()
