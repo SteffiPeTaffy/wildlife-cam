@@ -47,6 +47,6 @@ class ResettableTimer:
                                                                                                      self._interval,
                                                                                                      self._timeout))
             self._timer.cancel()
+            self._count += 1
             self._timer = Timer(self._interval, self._function, self._args, self._kwargs)
             self._timer.start()
-            self._count += 1
