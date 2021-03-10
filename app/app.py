@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import time
 from logzero import logger, logfile
 
 from wild_config import WildlifeCamConfig
