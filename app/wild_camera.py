@@ -6,7 +6,7 @@ from threading import Timer
 from enum import Enum, auto
 from gpiozero import MotionSensor
 
-from wild_timer import RemainingTimer
+from wild_timer import RemainingTimer, ResettableTimer
 from queue_worker import MediaItem, MediaType
 
 
@@ -25,11 +25,13 @@ class MotionCamera(PiCamera):
         self.resolution = (1280, 720)
         self.framerate = 24
         self._pause_timer = None
+        self._motion_timer = None
         self._pir_sensor = MotionSensor(pir_sensor_pin)
 
     def __handle_motion(self):
         logger.info("wildlife-cam: Motion detected")
-        self.start_clip(5, 'Motion detected!')
+        self.__start_motion_clip(caption='Motion detected!')
+        self._motion_timer.reset()
         self.capture_series(3, 'Motion detected!')
 
     def __get_file_path(self, file_ending):
@@ -52,22 +54,32 @@ class MotionCamera(PiCamera):
         return file_path
 
     def __stop_clip(self, file_path, caption):
-        if self.recording and file_path:
+        if self.recording:
             self.stop_recording()
             logger.info("wildlife-cam: Recorded a video clip")
             self.__call_handlers(MediaItem(media_type=MediaType.VIDEO, media=[file_path], caption=caption))
-
-    def __cancel_pause_timer(self):
-        if self._pause_timer and self._pause_timer.is_alive():
-            self._pause_timer.cancel()
 
     def start_clip(self, seconds=5, caption=''):
         if not self.recording:
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
             logger.info("wildlife-cam: Started recording a video clip")
-            t = Timer(seconds, self.__stop_clip, kwargs=({'file_path': video_file_path, 'caption': caption}))
-            t.start()
+            Timer(seconds, self.__stop_clip,
+                  kwargs=({'file_path': video_file_path, 'caption': caption})).start()
+
+    def __start_motion_clip(self, caption=''):
+        if not self.recording:
+            video_file_path = self.__get_file_path('.h264')
+            self.start_recording(video_file_path, resize=(480, 320))
+            self._motion_timer = ResettableTimer(interval=2, function=self.__stop_clip, timeout=20,
+                                                 kwargs=({'file_path': video_file_path, 'caption': caption}))
+            self._motion_timer.start()
+
+    def __cancel_timers(self):
+        if self._pause_timer and self._pause_timer.is_alive():
+            self._pause_timer.cancel()
+        if self._motion_timer and self._motion_timer.is_alive():
+            self._motion_timer.cancel()
 
     def capture_photo(self, caption=''):
         file_path = self.__capture_photo()
@@ -88,21 +100,21 @@ class MotionCamera(PiCamera):
         self._handlers.append(handler)
 
     def start(self):
-        self.__cancel_pause_timer()  # Cancel previous pause timer
-        self._status = CameraStatus.RUNNING  # set state to running
+        self.__cancel_timers()
+        self._status = CameraStatus.RUNNING
         logger.info("wildlife-cam: Wildlife Cam is ready and waiting for motion")
         self.capture_photo('Wildlife Cam is started and ready to go!')
         self._pir_sensor.when_motion = self.__handle_motion
 
     def stop(self):
         self._pir_sensor.when_motion = None
-        self.__cancel_pause_timer()
+        self.__cancel_timers()
         self._status = CameraStatus.STOPPED
         logger.info("wildlife-cam: Wildlife Cam is stopped")
 
     def pause(self, seconds=60):
         self._pir_sensor.when_motion = None
-        self.__cancel_pause_timer()
+        self.__cancel_timers()
         self._status = CameraStatus.PAUSED
 
         if not seconds or int(seconds) < 0 or int(seconds) > 60 * 5:  # don't pause longer than 5 minutes
