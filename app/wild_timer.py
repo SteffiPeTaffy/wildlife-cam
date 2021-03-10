@@ -21,18 +21,22 @@ class RemainingTimer(Timer):
         return self._time_until_call - self.elapsed()
 
 
-class ResettableTimer(Timer):
+class ResettableTimer:
     def __init__(self, interval, function, timeout, *args, **kwargs):
-        self.interval = interval
-        self.function = function
-        self.timeout = timeout
-        self.args = args
-        self.kwargs = kwargs
+        self._interval = interval
+        self._function = function
+        self._timeout = timeout
+        self._args = args
+        self._kwargs = kwargs
         self._count = 1
-        super().__init__(self.interval, self.function, self.args, self.kwargs)
+        self._timer = Timer(self._interval, self._function, self._args, self._kwargs)
+
+    def start(self):
+        self._timer.start()
 
     def reset(self):
-        if self._count * self.interval < self.timeout:
-            self.cancel()
-            super().__init__(self.interval, self.function, self.args, self.kwargs)
-            self.start()
+        if self._count * self._interval < self._timeout:
+            self._timer.cancel()
+            self._timer = Timer(self._interval, self._function, self._args, self._kwargs)
+            self._timer.start()
+            self._count += 1
