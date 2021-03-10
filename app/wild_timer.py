@@ -1,5 +1,6 @@
 import time
 from threading import Timer
+from logzero import logger
 
 
 class RemainingTimer(Timer):
@@ -42,6 +43,9 @@ class ResettableTimer:
 
     def reset(self):
         if self._count * self._interval < self._timeout:
+            logger.info("wildlife-cam: Resetting timer, count: {}, interval: {}, timeout: {}".format(self._count,
+                                                                                                     self._interval,
+                                                                                                     self._timeout))
             self._timer.cancel()
             self._timer = Timer(self._interval, self._function, self._args, self._kwargs)
             self._timer.start()

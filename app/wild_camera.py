@@ -55,19 +55,20 @@ class MotionCamera(PiCamera):
 
     def __stop_clip(self, file_path, caption):
         if self.recording:
-            self.stop_recording()
             logger.info("wildlife-cam: Recorded a video clip")
+            self.stop_recording()
             self.__call_handlers(MediaItem(media_type=MediaType.VIDEO, media=[file_path], caption=caption))
 
     def start_clip(self, seconds=5, caption=''):
         if not self.recording:
+            logger.info("wildlife-cam: Started recording a video clip")
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
-            logger.info("wildlife-cam: Started recording a video clip")
             Timer(seconds, lambda: self.__stop_clip(file_path=video_file_path, caption=caption)).start()
 
     def __start_motion_clip(self, caption=''):
         if not self.recording:
+            logger.info("wildlife-cam: Started recording a video clip")
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
             self._motion_timer = ResettableTimer(interval=2, timeout=20,
