@@ -34,6 +34,12 @@ class ResettableTimer:
     def start(self):
         self._timer.start()
 
+    def is_alive(self):
+        return self._timer.is_alive()
+
+    def cancel(self):
+        self._timer.cancel()
+
     def reset(self):
         if self._count * self._interval < self._timeout:
             self._timer.cancel()
