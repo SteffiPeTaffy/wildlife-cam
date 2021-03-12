@@ -50,3 +50,5 @@ class ResettableTimer:
             self._count += 1
             self._timer = Timer(self._interval, self._function, self._args, self._kwargs)
             self._timer.start()
+        else:
+            logger.info("wildlife-cam: Not resetting timer, timeout reached")
