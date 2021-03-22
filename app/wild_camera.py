@@ -29,10 +29,14 @@ class MotionCamera(PiCamera):
         self._pir_sensor = MotionSensor(pir_sensor_pin)
 
     def __handle_motion(self):
-        logger.info("wildlife-cam: Motion detected")
+        logger.info("wildlife-cam: Motion started detected")
         self.__start_motion_clip(caption='Motion detected!')
         self._motion_timer.reset()
         self.capture_series(3, 'Motion detected!')
+
+    def __handle_no_motion(self):
+        logger.info("wildlife-cam: Motion stopped detected")
+        # self._motion_timer.trigger()
 
     def __get_file_path(self, file_ending):
         current_time = datetime.utcnow()
@@ -71,7 +75,7 @@ class MotionCamera(PiCamera):
             logger.info("wildlife-cam: Started recording a video clip")
             video_file_path = self.__get_file_path('.h264')
             self.start_recording(video_file_path, resize=(480, 320))
-            self._motion_timer = ResettableTimer(interval=3, timeout=20,
+            self._motion_timer = ResettableTimer(interval=5, timeout=30,
                                                  function=lambda: self.__stop_clip(file_path=video_file_path,
                                                                                    caption=caption))
             self._motion_timer.start()
@@ -106,15 +110,18 @@ class MotionCamera(PiCamera):
         logger.info("wildlife-cam: Wildlife Cam is ready and waiting for motion")
         self.capture_photo('Wildlife Cam is started and ready to go!')
         self._pir_sensor.when_motion = self.__handle_motion
+        self._pir_sensor.when_no_motion = self.__handle_no_motion
 
     def stop(self):
         self._pir_sensor.when_motion = None
+        self._pir_sensor.when_no_motion = None
         self.__cancel_timers()
         self._status = CameraStatus.STOPPED
         logger.info("wildlife-cam: Wildlife Cam is stopped")
 
     def pause(self, seconds=60):
         self._pir_sensor.when_motion = None
+        self._pir_sensor.when_no_motion = None
         self.__cancel_timers()
         self._status = CameraStatus.PAUSED
 

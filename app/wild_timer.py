@@ -52,3 +52,8 @@ class ResettableTimer:
             self._timer.start()
         else:
             logger.info("wildlife-cam: Not resetting timer, timeout reached")
+
+    def trigger(self):
+        logger.info("wildlife-cam: timer triggered")
+        self._timer.cancel()
+        self._function()
