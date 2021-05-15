@@ -25,18 +25,12 @@ class MotionCamera(PiCamera):
         self.resolution = (1280, 720)
         self.framerate = 24
         self._pause_timer = None
-        self._motion_timer = None
         self._pir_sensor = MotionSensor(pir_sensor_pin)
 
     def __handle_motion(self):
         logger.info("wildlife-cam: Motion started detected")
-        self.__start_motion_clip(caption='Motion detected!')
-        self._motion_timer.reset()
+        self.start_clip(5, caption='Motion detected!')
         self.capture_series(3, 'Motion detected!')
-
-    def __handle_no_motion(self):
-        logger.info("wildlife-cam: Motion stopped detected")
-        # self._motion_timer.trigger()
 
     def __get_file_path(self, file_ending):
         current_time = datetime.utcnow()
@@ -70,21 +64,9 @@ class MotionCamera(PiCamera):
             self.start_recording(video_file_path, resize=(480, 320))
             Timer(seconds, lambda: self.__stop_clip(file_path=video_file_path, caption=caption)).start()
 
-    def __start_motion_clip(self, caption=''):
-        if not self.recording:
-            logger.info("wildlife-cam: Started recording a video clip")
-            video_file_path = self.__get_file_path('.h264')
-            self.start_recording(video_file_path, resize=(480, 320))
-            self._motion_timer = ResettableTimer(interval=5, timeout=30,
-                                                 function=lambda: self.__stop_clip(file_path=video_file_path,
-                                                                                   caption=caption))
-            self._motion_timer.start()
-
     def __cancel_timers(self):
         if self._pause_timer and self._pause_timer.is_alive():
             self._pause_timer.cancel()
-        if self._motion_timer and self._motion_timer.is_alive():
-            self._motion_timer.cancel()
 
     def capture_photo(self, caption=''):
         file_path = self.__capture_photo()
@@ -110,18 +92,15 @@ class MotionCamera(PiCamera):
         logger.info("wildlife-cam: Wildlife Cam is ready and waiting for motion")
         self.capture_photo('Wildlife Cam is started and ready to go!')
         self._pir_sensor.when_motion = self.__handle_motion
-        self._pir_sensor.when_no_motion = self.__handle_no_motion
 
     def stop(self):
         self._pir_sensor.when_motion = None
-        self._pir_sensor.when_no_motion = None
         self.__cancel_timers()
         self._status = CameraStatus.STOPPED
         logger.info("wildlife-cam: Wildlife Cam is stopped")
 
     def pause(self, seconds=60):
         self._pir_sensor.when_motion = None
-        self._pir_sensor.when_no_motion = None
         self.__cancel_timers()
         self._status = CameraStatus.PAUSED
 

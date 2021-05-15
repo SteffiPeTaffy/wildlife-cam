@@ -8,7 +8,7 @@ class TestResettableTimer(TestCase):
     def setUp(self):
         self.ended = False
         self.timer = ResettableTimer(interval=1, timeout=3,
-                            function=self.has_triggered)
+                                     function=self.has_triggered)
 
     def test_start(self):
         self.timer.start()
